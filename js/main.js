@@ -1,6 +1,6 @@
 const DEBUG = false;
-const DEBUG_FARM_ID = 15;
-const DEBUG_POOL_ID = 19;
+const DEBUG_FARM_ID = 2;
+const DEBUG_POOL_ID = 1;
 
 let appInitializer = new AppInitializer();
 let web3 = null;

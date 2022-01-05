@@ -81,30 +81,54 @@
 						<div class="pool-header">
 							<span class="pool-pair">{{token0Symbol}} - {{token1Symbol}}</span>
 						</div>
-						<div class="pool-body">		
-							<div class="pool-token0-price">
-								<label>{{token0Symbol}}:</label>
-								<span>{{token0FormattedPrice}}</span>
-							</div>					
-							<div class="pool-token1-price">
-								<label>{{token1Symbol}}:</label>
-								<span>{{token1FormattedPrice}}</span>
-							</div>					
-							<div class="pool-tvl">
-								<label>Pool TVL:</label>
-								<span>{{formattedTvl}}</span>
-							</div>
-							<div class="pool-tvl">
-								<label>Staked TVL:</label>
-								<span>{{formattedStakedTvl}}</span>
-							</div>
-							<div class="pool-reward-allocation">
-								<label>Reward allocation:</label>
-								<span>{{formattedPoolRewardAllocation}}</span>
-							</div>
-							<div class="pool-apr">
-								<label>APR:</label>
-								<span>{{formattedApr}}</span>
+						<div class="pool-body">	
+							<div class="pool-details">
+								<div class="pool-token0-price">
+									<label>{{token0Symbol}}:</label>
+									<span>{{token0FormattedPrice}}</span>
+								</div>					
+								<div class="pool-token1-price">
+									<label>{{token1Symbol}}:</label>
+									<span>{{token1FormattedPrice}}</span>
+								</div>					
+								<div class="pool-tvl">
+									<label>Pool TVL:</label>
+									<span>{{formattedTvl}}</span>
+								</div>
+								<div class="pool-tvl">
+									<label>Staked TVL:</label>
+									<span>{{formattedStakedTvl}}</span>
+								</div>
+								<div class="pool-reward-allocation">
+									<label>Reward allocation:</label>
+									<span>{{formattedPoolRewardAllocation}}</span>
+								</div>
+								<div class="pool-apr">
+									<label>APR:</label>
+									<span>{{formattedApr}}</span>
+								</div>
+							</div>	
+							<div class="pool-staking-details">				
+								<div class="pool-staking-details-text">
+									<label>You are staking:</label>
+									<div>
+										<span class="big-text">{{formattedStakedLpTokenAmount}}</span><span class="small-text"> LP tokens</span>
+									</div>
+								</div>
+								<div class="pool-staking-details-text">
+									<label>Your stake is:</label>
+									<span class="big-text">{{formattedPercentOfPool}}</span><span class="small-text"> of the total pool</span>
+								</div>
+								<div class="pool-staking-details-text">
+									<label>Your LP is:</label>
+									<span class="big-text">{{formattedStakedToken0Amount}} {{token0Symbol}}</span>
+									<span class="small-text">and</span>
+									<span class="big-text">{{formattedStakedToken1Amount}} {{token1Symbol}}</span>
+								</div>
+								<div class="pool-staking-details-text">
+									<label>Your stake value is:</label>
+									<span class="bigger-text">{{formattedStakedValue}}</span>
+								</div>
 							</div>
 						</div>
 						<div class="pool-footer">

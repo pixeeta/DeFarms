@@ -85,7 +85,7 @@ function PoolInfoProvider(options) {
         ///////////////////////////////////////	
         ///////////////////////////////////////
 
-        let stakedAmount = null;
+        let stakedLpTokenAmount = null;
         let stakedValue = null;
         let userPoolPercent = null;
         let stakedQuantity0 = null;
@@ -93,13 +93,13 @@ function PoolInfoProvider(options) {
         let isStaked = false;
         if (userWalletIsConnected){
             const userInfo = await self.masterchef.userInfo(poolId, storageProvider.getUserWalletAddress()).call();
-            stakedAmount = Number(userInfo.amount) / Math.pow(10, poolDecimals);
-            stakedValue = stakedAmount * poolPrice;
-            if (stakedAmount > 0) {
+            stakedLpTokenAmount = Number(userInfo.amount) / Math.pow(10, poolDecimals);
+            stakedValue = stakedLpTokenAmount * poolPrice;
+            if (stakedLpTokenAmount > 0) {
                 isStaked = true;
             }
 
-            userPoolPercent = stakedAmount / poolTotalSupply;
+            userPoolPercent = stakedLpTokenAmount / poolTotalSupply;
             stakedQuantity0 = userPoolPercent * q0;
             stakedQuantity1 = userPoolPercent * q1;
         }
@@ -114,7 +114,9 @@ function PoolInfoProvider(options) {
             apr: yearlyAPR,
             userStaking: {
                 isStaked: isStaked,
-                stakedAmount: stakedAmount,
+                stakedLpTokenAmount: stakedLpTokenAmount,
+                stakedToken0Amount: stakedQuantity0,
+                stakedToken1Amount: stakedQuantity1,
                 stakedValue: stakedValue,
                 percentOfPool: userPoolPercent,
             },
@@ -123,16 +125,14 @@ function PoolInfoProvider(options) {
                 address: token0Address,
                 price: p0,
                 formattedPrice: !isNaN(p0) ? p0.toFixed(4) : '--',
-                reserves: reserves[0],
-                stakedAmount: stakedQuantity0
+                reserves: reserves[0]
             },
             token1: { 
                 symbol: token1Data.symbol,
                 address: token1Address,
                 price: p1,
                 formattedPrice: !isNaN(p1) ? p1.toFixed(4) : '--',
-                reserves: reserves[1],
-                stakedAmount: stakedQuantity1
+                reserves: reserves[1]
             },
             technicals: {
                 totalSupply: poolTotalSupply,

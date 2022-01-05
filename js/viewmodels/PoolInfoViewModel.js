@@ -18,6 +18,19 @@ function PoolInfoViewModel(poolInfo, isBestApr) {
         this.formattedPoolRewardAllocation = !isNaN(this.poolRewardAllocation) ? formatDecimalNumber(this.poolRewardAllocation * 100) + '%' : '--%';
 
         this.isStaked = poolInfo.userStaking.isStaked;
+        if (this.isStaked) {
+            this.stakedLpTokenAmount = poolInfo.userStaking.stakedLpTokenAmount;
+            this.percentOfPool = poolInfo.userStaking.percentOfPool;
+            this.stakedToken0Amount = poolInfo.userStaking.stakedToken0Amount;
+            this.stakedToken1Amount = poolInfo.userStaking.stakedToken1Amount;
+            this.stakedValue = poolInfo.userStaking.stakedValue;
+            
+            this.formattedStakedLpTokenAmount = this.stakedLpTokenAmount < 1 ?  formatDecimalNumber(this.stakedLpTokenAmount, 4) : formatDecimalNumber(this.stakedLpTokenAmount, 2);
+            this.formattedPercentOfPool = (this.percentOfPool < 1 ?  formatDecimalNumber(this.percentOfPool, 4) : formatDecimalNumber(this.percentOfPool, 2)) + "%";
+            this.formattedStakedToken0Amount = this.stakedToken0Amount < 1 ?  formatDecimalNumber(this.stakedToken0Amount, 4) : formatDecimalNumber(this.stakedToken0Amount, 2);
+            this.formattedStakedToken1Amount = this.stakedToken1Amount < 1 ?  formatDecimalNumber(this.stakedToken1Amount, 4) : formatDecimalNumber(this.stakedToken1Amount, 2);
+            this.formattedStakedValue =   '$' + (this.stakedValue < 1 ? formatDecimalNumber(this.stakedValue, 4) : formatDecimalNumber(this.stakedValue, 2));
+        }
         
         this.isBestAprClass = isBestApr ? 'pool-is-best-apr' : '';
         this.isStakedClass = this.isStaked ? 'pool-is-staked' : '';
