@@ -1,0 +1,101 @@
+
+#header {
+    position: fixed;
+    display: flex;
+    justify-content: space-between;
+    z-index: 9999;
+    top: 0;
+    height: 60px;
+    width: 100%;
+    background-color: rgb(250, 250, 250);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 16px rgba(0, 0, 0, 0.07);
+}
+
+#header #page-title {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
+
+#header h1 {
+    line-height: 60px;
+    margin: 0 0 0 20px;
+    padding: 0;
+    color: rgb(45, 47, 58);
+    font-size: 28px;
+}
+
+#header #header-controls {
+    display: flex;
+    flex-basis: 560px;
+}
+
+.header-button {
+    flex: 1;
+    height: 100%;
+    margin: 0;
+    border: 0;
+    padding: 0 4px 0 4px;
+    background-color: rgb(250, 250, 250);
+    border-left: 1px solid rgb(231, 231, 231);
+}
+
+.header-button:hover {
+    cursor: pointer;
+    background-color: rgb(235, 235, 235);
+}
+
+
+.header-button.disabled:hover {
+    cursor: not-allowed;
+    background-color: initial;
+}
+
+.header-button.active {
+    background-color: rgb(240 240 240);
+}
+
+
+/* ######### DARK MODE ######### */ 
+
+body.dark-mode #header, body.dark-mode .header-button { 
+    background-color: #1c1f21;
+}
+
+body.dark-mode #header {
+    border-bottom: 1px solid rgba(207, 207, 207, 0.1);
+    box-shadow: 0 0 16px rgba(255, 255, 255, 0.07);
+}
+
+body.dark-mode #page-title h1 {    
+    color: #eee;
+}
+
+body.dark-mode .header-button {  
+    color: #dadada;
+    border-left: 1px solid rgb(80, 80, 80);
+}
+
+body.dark-mode .header-button[disabled] {  
+    color: #3f3f3f;
+    background-color: #242424;
+}
+
+body.dark-mode .header-button:hover {
+    background-color: #353535;
+}
+
+body.dark-mode .header-button.disabled:hover {
+    background-color: #242424;
+}
+
+body.dark-mode .header-button.active {
+    background-color: #303030;
+}
+
+@media (max-width: 1100px) {
+    #header h1 { 
+        font-size: 20px;
+    }
+}

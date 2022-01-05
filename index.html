@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<link rel="stylesheet" href="./css/main.css">
+	<link rel="stylesheet" href="./css/header.css">
+	<link rel="stylesheet" href="./css/farm-info.css">
+	<script	src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
+	<script src="./node_modules/web3/dist/web3.min.js"></script>
+	<script src="./js/static/networks.js"></script>
+	<script src="./js/static/abis.js"></script>
+	<!-- <script src="./js/ethers_helper.js"></script> -->
+	<script src="./js/static/harmony_tokens.js"></script>
+	<script src="./js/static/harmony_masterchefs.js"></script>
+	<script src="./js/static/mtv_masterchefs.js"></script>
+	<script src="./js/data_providers/TokenPriceProvider.js"></script>
+	<script src="./js/data_providers/FarmInfoProvider.js"></script>
+	<script src="./js/data_providers/PoolInfoProvider.js"></script>
+	<script src="./js/data_providers/StorageProvider.js"></script>
+	<script src="./js/viewmodels/FarmInfoViewModel.js"></script>
+	<script src="./js/viewmodels/PoolInfoViewModel.js"></script>
+	<script src="./js/utils.js"></script>
+	<script src="./js/header_button_handlers.js"></script>
+	<script src="./js/AppInitializer.js"></script>
+	<script src="./js/main.js"></script>
+</head>
+<body>
+	<div id="header">
+		<div id="page-title">			
+			<h1>Harmony Yield Farm Aggregator</h1>
+		</div>
+		<div id="header-controls">
+			<button id="sort-farms-by-apr-button" class="header-button disabled" disabled>Sort farms by APR</button>
+			<button id="sort-pools-by-apr-button" class="header-button disabled" disabled>Sort pools by APR</button>
+			<button id="show-staked-only-button" class="header-button">Show staked only</button>
+			<button id="show-non-incentivised-pools-button" class="header-button">Show non-incentivized</button>
+			<button id="toggle-dark-mode-button" class="header-button">Dark mode</button>
+			<button id="connect-wallet-button" class="header-button">Connect MM wallet</button>
+		</div>
+	</div>
+	<div id="wrong-network-message">
+		<span>Please switch to Harmony Mainnet Shard 0 network</span>
+	</div>
+	<div id="content-container"></div>
+</body>
+<script id="farm-info-template" type="text/x-handlebars-template">
+    <div class="farm-info" id="{{nameWithouthSpaces}}-farm-info" data-farm-id="{{farmId}}" data-farm-masterchef-address="{{masterchefAddress}}">
+		<div class="farm-info-header">
+			<div class="farm-name">{{name}}</div>
+			<div class="farm-info-right-side-container">
+				<div class="farm-discovered-pools-number">
+					<label>Discovered pools:</label>
+					<span>{{totalDiscoveredPools}}/{{totalMasterchefPools}}</span>
+				</div>
+				<div class="farm-incentivised-pools-number">
+					<label>Incentivized pools:</label>
+					<span>{{incentivisedPools}}</span>
+				</div>
+				<div class="farm-staked-pools-number">
+					<label>Staked pools:</label>
+					<span>{{numberOfStakedPools}}</span>
+				</div>
+				<div class="farm-best-apr">
+					<label>Best APR:</label>
+					<span>{{formattedFarmBestApr}}</span>
+				</div>
+				<div class="button-container">
+					<div class="fold-farm-info-button" data-farm-info-id="{{nameWithouthSpaces}}-farm-info">
+						<div class="caret-icon">
+							<div class="caret {{#if isCollapsed}}down{{else}}up{{/if}}"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+        <div class="farm-pools-container {{#if isCollapsed}}collapsed{{/if}}">
+            <ul class="farm-pools-list">
+                {{#each pools}}
+					{{#if address}}
+					<li class="pool-item {{isBestAprClass}} {{isStakedClass}} {{isIncentivisedClass}}" data-farm-masterchef-address="{{../masterchefAddress}}" data-pool-address="{{address}}" data-pool-id="{{poolId}}">
+						<div class="pool-header">
+							<span class="pool-pair">{{token0Symbol}} - {{token1Symbol}}</span>
+						</div>
+						<div class="pool-body">		
+							<div class="pool-token0-price">
+								<label>{{token0Symbol}}:</label>
+								<span>{{token0FormattedPrice}}</span>
+							</div>					
+							<div class="pool-token1-price">
+								<label>{{token1Symbol}}:</label>
+								<span>{{token1FormattedPrice}}</span>
+							</div>					
+							<div class="pool-tvl">
+								<label>Pool TVL:</label>
+								<span>{{formattedTvl}}</span>
+							</div>
+							<div class="pool-tvl">
+								<label>Staked TVL:</label>
+								<span>{{formattedStakedTvl}}</span>
+							</div>
+							<div class="pool-reward-allocation">
+								<label>Reward allocation:</label>
+								<span>{{formattedPoolRewardAllocation}}</span>
+							</div>
+							<div class="pool-apr">
+								<label>APR:</label>
+								<span>{{formattedApr}}</span>
+							</div>
+						</div>
+						<div class="pool-footer">
+							<span class="pool-id">{{poolId}}</span>
+							<span class="pool-token-type">{{lpTokenType}}</span>
+						</div>
+						<div class="best-apr-ribbon">
+							<span>Best APR</span>
+						</div>
+						<div class="pool-staked-ribbon">
+							<span>Staked</span>
+						</div>
+					</li>
+					{{else}}
+					<li class="pool-item">
+						<div class="pool-header">
+							<span class="pool-id">N/A</span>
+						</div>
+						<div class="pool-body">							
+							<span class="pool-error">There was a problem with retrieving pool data</span>
+						</div>
+					</li>
+					{{/if}}
+                {{/each}}
+            </ul>
+        </div>
+    </div>
+</script>
+<html>

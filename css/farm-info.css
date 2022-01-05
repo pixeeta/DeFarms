@@ -1,0 +1,327 @@
+
+.farm-info {
+    margin: 0 15px 0px 15px;
+}
+
+.farm-info-header {
+    /* position: relative; */
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap;
+
+    /* background-color: rgb(201, 201, 201); */
+    min-height: 60px;
+    line-height: 38px;
+    padding-left: 14px;
+    /* border-radius: 12px 12px 0 0; */
+    color: rgb(34, 36, 44);
+}
+
+.farm-info-header .farm-name {
+    /* box-shadow: 0 0 10px #0002; */
+    /* display: inline-block; */
+    font-size: 28px; 
+    /* line-height: 60px; */
+    font-weight: 700;   
+    color: #4a4a4a;
+    /* flex-basis: 300px; */
+}
+
+.farm-info-header .farm-info-right-side-container {
+    display: flex;
+    flex-basis: 710px;
+    justify-content: space-evenly;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    align-items: flex-end;
+}
+
+.farm-info-header .farm-staked-pools-number {
+    flex: 4;
+    text-align: left;
+}
+
+.farm-info-header .farm-incentivised-pools-number, .farm-info-header .farm-discovered-pools-number {
+    flex: 5;
+    text-align: left;
+}
+
+ .farm-staked-pools-number label, .farm-incentivised-pools-number label, .farm-discovered-pools-number label {
+    font-size: 13px;
+    color: #505050;
+}
+.farm-staked-pools-number span, .farm-incentivised-pools-number span, .farm-discovered-pools-number span {
+    font-size: 16px;
+}
+
+.farm-info-header .farm-best-apr {
+    width: 180px;
+}
+.farm-best-apr label {
+    font-size: 16px;
+} 
+.farm-best-apr span {
+    font-size: 22px;
+}
+
+.farm-info-header .farm-staked-pools-number {
+    /* flex-basis: 120px; */
+}
+
+.farm-info-header .button-container {
+    display: inline-block;
+    position: relative;
+    height: 38px;
+    flex-basis: 38px;
+    /* margin-right: 10px; */
+}
+
+.fold-farm-info-button {
+    position: absolute;
+    right: 0px;
+    height: 38px;
+    width: 38px;
+    /* background-color: rgb(201, 201, 201); */
+}
+
+.fold-farm-info-button .caret-icon .down {
+    position: absolute;
+    right: 12px;
+    top: 10px;
+}
+
+.fold-farm-info-button .caret-icon .up {
+    position: absolute;
+    right: 12px;
+    top: 16px;
+}
+
+.fold-farm-info-button:hover {
+    cursor: pointer;
+    background-color: rgb(221 221 221);
+}
+
+/* ##################### */
+/* ##################### */
+/* ##################### */
+
+.farm-pools-container {
+    /* background-color: rgba(242, 242, 242, 0.3); */
+    /* padding: 10px 20px 10px 20px; */
+    /* border-radius: 0 0 12px 12px; */
+    /* border: 1px solid #c1c1c1aa; */
+    /* box-shadow: 0 0 10px #0002; */
+    max-height: 20000px;
+    transition: max-height .4s;
+    overflow-y: hidden;
+}
+
+.collapsed {
+    max-height: 0px;
+}
+
+ul.farm-pools-list {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-evenly;
+    
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    margin-bottom: 36px;
+}
+
+/* ul.farm-pools-list li {
+    display: inline-block;
+    vertical-align: top; 
+    flex-basis: 280px;
+} */
+
+/* ################### POOL ITEM ################## */
+
+.pool-item {
+    position: relative;
+    flex-basis: 220px;
+    flex-grow: 1;
+    min-height: 64px;
+    border: 1.5px solid #c1c1c1aa;
+    background: #fff;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
+    border-radius: 6px;
+    padding: 16px 20px 8px 20px;
+    margin: 12px 8px 12px 8px;
+    text-align: center;
+    color: rgb(102, 102, 102);
+    overflow: hidden;
+}
+
+.farm-pools-list li:last-child {
+    flex-grow: 0;
+}
+
+.pool-item.pool-is-not-incentivised {
+    display: none;
+    background-color: rgb(219, 219, 219);
+}
+
+#content-container.show-non-incentivised-pools .pool-item.pool-is-not-incentivised {
+    display: block;
+}
+
+.pool-header span {
+    display: inline-block;
+}
+
+span.pool-pair {
+    text-align: center;
+    width: calc(100% - 0px);
+    font-size: 22px;
+    font-weight: 500;
+}
+
+.pool-body {
+    padding-top: 14px;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.pool-tvl {
+    margin-top: 14px;
+}
+
+.pool-tvl label, .pool-reward-allocation label, .pool-apr label {
+    display: block;
+    font-size: 14px;
+}
+
+.pool-tvl span {
+    font-size: 16px;
+}
+
+.pool-reward-allocation {
+    margin-top: 12px;
+}
+
+.pool-apr {
+    margin-top: 12px;
+}
+
+.pool-apr span {
+    font-size: 18px;
+}
+
+.pool-item .pool-footer {
+    height: 22px;
+    margin-top: 8px;
+}
+
+span.pool-id { 
+    /* background-color: rgb(207, 206, 206); */
+    font-size: 22px;
+    position: absolute;
+    left: 8px;
+    top: 6px;
+    font-size: 14px;
+    color:rgb(110, 110, 110);
+}
+
+.pool-token-type {
+    position: absolute;
+    right: 8px;
+    bottom: 6px;
+    font-size: 14px;
+    color:rgb(110, 110, 110);
+}
+
+.best-apr-ribbon {
+    display: none;
+    position: absolute;
+    left: -70px;
+    bottom: 16px;
+    transform: rotate(45deg);
+    width: 200px;
+    height: 28px;
+    line-height: 28px;
+    text-align: center;
+    background-color: rgb(218, 1, 1);
+    color: white;
+}
+
+.pool-staked-ribbon {
+    display: none;
+    position: absolute;
+    left: -48px;
+    bottom: 32px;
+    transform: rotate(45deg);
+    width: 200px;
+    height: 28px;
+    line-height: 28px;
+    text-align: center;
+    background-color: rgb(0, 163, 35);
+    color: white;
+}
+
+.pool-item.pool-is-best-apr .best-apr-ribbon {
+    display: block !important;
+}
+
+.pool-item.pool-is-staked .pool-staked-ribbon {
+    display: block !important;
+}
+
+/* .pool-item.pool-is-staked { 
+
+} */
+
+#content-container.show-staked-only-pools .pool-item:not(.pool-is-staked) {
+    display: none;
+}
+
+/* ########### DARK MODE ############ */
+
+body.dark-mode .farm-info-header, body.dark-mode .farm-info-header .farm-name {
+    color: #ccc;
+}
+
+body.dark-mode .farm-staked-pools-number label, 
+body.dark-mode .farm-incentivised-pools-number label, 
+body.dark-mode .farm-discovered-pools-number label {
+    color: #b6b6b6;
+}
+
+body.dark-mode .fold-farm-info-button:hover {
+    background-color: #353535;
+}
+
+body.dark-mode .pool-item {
+    background: hsla(0,0%,100%,.05);
+    box-shadow: 0 2px 8px rgba(180, 180, 180, 0.1);
+    color: #ccc;
+}
+
+body.dark-mode .pool-item.pool-is-not-incentivised {
+    background: rgba(255, 255, 255, 0);
+    color: rgb(104, 104, 104);
+}
+
+@media (max-width: 980px) { 
+    .farm-info {
+        margin-bottom: 15px;
+    }
+
+    .farm-info-header .farm-name { 
+        font-size: 22px;
+    }
+
+    .farm-info-header {
+        flex-flow: column;        
+        align-items: stretch;
+        line-height: 32px;
+    }
+    
+    .farm-info-header .farm-info-right-side-container {
+        flex-basis: initial;
+    }
+}

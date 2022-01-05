@@ -1,0 +1,24 @@
+{
+  "name": "harmonyfarmfinder",
+  "version": "0.0.1",
+  "description": "App for farming new farm pools on Harmony One blockchain",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "harmony",
+    "one",
+    "farm",
+    "finder",
+    "lp",
+    "pool",
+    "yield",
+    "farm"
+  ],
+  "author": "pixeeta",
+  "license": "ISC",
+  "dependencies": {
+    "web3": "^1.6.1"
+  }
+}
