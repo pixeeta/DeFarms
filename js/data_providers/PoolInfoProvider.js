@@ -1,22 +1,24 @@
 function PoolInfoProvider(options) {
     const self = this;
 
-    self.masterchef = null;
-    self.chefContract = null;
+    self.masterchefProvider = null;
+    self.masterchefContract = null;
     self.rewardTokenAddress = null;
     self.rewardsPerWeek = null;
     self.totalAllocationPoints = null;
+    self.lpTokenPropertyName = null;
 
     self.getPoolInfo = async function(poolId) {
         return getPoolInfo(poolId);
     }
 
     function init() {
-        self.masterchef = options.masterchef;
-        self.chefContract = options.chefContract;
+        self.masterchefProvider = options.masterchefProvider;
+        self.masterchefContract = options.masterchefContract;
         self.rewardTokenAddress = options.rewardTokenAddress;
         self.rewardsPerWeek = options.rewardsPerWeek;
         self.totalAllocationPoints = options.totalAllocationPoints;
+        self.lpTokenPropertyName = options.lpTokenPropertyName;
 
         return self;
     }
@@ -29,8 +31,12 @@ function PoolInfoProvider(options) {
             console.log ('hit debugging pool');
         }
 
-        const pool = await self.masterchef.poolInfo(poolId).call();
-        const lpTokenContract = getTokenContract(pool.lpToken, "uniswap");
+        let lpTokenPropertyName = "lpToken";
+        if (self.lpTokenPropertyName) {
+            lpTokenPropertyName = self.lpTokenPropertyName;
+        }
+        const pool = await self.masterchefProvider.makeMasterchefCall('poolInfo', [ poolId ] , null);
+        const lpTokenContract = getTokenContract(pool[lpTokenPropertyName], "uniswap");
 
         const poolName = await lpTokenContract.name().call();
         const poolSymbol = await lpTokenContract.symbol().call();
@@ -70,7 +76,7 @@ function PoolInfoProvider(options) {
         
         const tvl = q0 * p0 + q1 * p1;
         const poolPrice = tvl / poolTotalSupply;
-        const poolStaked = await lpTokenContract.balanceOf(self.chefContract).call() / Math.pow(10, poolDecimals);
+        const poolStaked = await lpTokenContract.balanceOf(self.masterchefContract).call() / Math.pow(10, poolDecimals);
         const stakedTvl = poolStaked * poolPrice;
 
         const poolAllocationPoints = Number(pool.allocPoint);
@@ -92,7 +98,7 @@ function PoolInfoProvider(options) {
         let stakedQuantity1 = null;
         let isStaked = false;
         if (userWalletIsConnected){
-            const userInfo = await self.masterchef.userInfo(poolId, storageProvider.getUserWalletAddress()).call();
+            const userInfo = await self.masterchefProvider.makeMasterchefCall('userInfo', [ poolId, storageProvider.getUserWalletAddress()], null);
             stakedLpTokenAmount = Number(userInfo.amount) / Math.pow(10, poolDecimals);
             stakedValue = stakedLpTokenAmount * poolPrice;
             if (stakedLpTokenAmount > 0) {
@@ -105,7 +111,7 @@ function PoolInfoProvider(options) {
         }
 
         const poolInfo = {
-            address: pool.lpToken,
+            address: pool[lpTokenPropertyName],
             poolId: poolId,
             symbol: poolSymbol,
             name: poolName,

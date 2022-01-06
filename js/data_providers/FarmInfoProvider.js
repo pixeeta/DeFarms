@@ -1,8 +1,8 @@
 function FarmInfoProvider() {
     const self = this;
 
-    self.getFarmInfo = async function(masterchefContractInfo) {
-        return getFarmInfo(masterchefContractInfo);
+    self.getFarmInfo = async function(masterchefJson) {
+        return getFarmInfo(masterchefJson);
     }
 
     function init() {
@@ -11,51 +11,39 @@ function FarmInfoProvider() {
 
     init();
     
-    async function getFarmInfo(masterchefContractInfo) {
-        const masterchef = getMasterChef(masterchefContractInfo.chefAbi, masterchefContractInfo.chefContract);
-        let poolLength;
-        try {
-            poolLength = await masterchef.poolLength().call();  	
-        } catch {
-            poolLength = 2;
-        }
+    async function getFarmInfo(masterchefJson) {
+        const masterchefProvider = new MasterchefProvider(masterchefJson);
 
+        let poolLength = await masterchefProvider.makeMasterchefCall('poolLength', null, masterchefJson.poolLength);
         let poolIds = [];	
         for (let i = 0; i < poolLength; i++) {
             poolIds.push(i);
         }
 
-        let rewardTokenAddress = null;
-        try {
-            rewardTokenAddress = await masterchef[masterchefContractInfo.rewardTokenFunctionName]().call();
-        } catch {
-            rewardTokenAddress = masterchefContractInfo.rewardTokenAddress;
-        }
-
         const blockNumber = await web3.eth.getBlockNumber();
-        let multiplier;
-        try {
-            multiplier = await masterchef.getMultiplier(blockNumber, blockNumber+1).call();
-        } catch {
-            multiplier = 1;
-        }
-        
-        const totalAllocationPoints = await masterchef.totalAllocPoint().call();
-
-        let rewardPerBlock = null;
-        try {
-            rewardPerBlock = await masterchef[masterchefContractInfo.blockRewardFunctionName]().call();
-        } catch {
+        let multiplier = await masterchefProvider.makeMasterchefCall('getMultiplier', [blockNumber, blockNumber+1], 1);
+        let rewardsAmount = await masterchefProvider.makeMasterchefCall(masterchefJson.blockRewardFunctionName, null, null);
+        let rewardsPerWeek = null;
+        if (rewardsAmount) {
+            if (masterchefJson.areRewardsReleasedPerSecond) {
+                rewardsPerWeek = rewardsAmount / 1e18 * 604800;
+            } else {
+                rewardsPerWeek = rewardsAmount / 1e18 * multiplier * 604800 / 2;
+            }
+        } else {
             console.log("couldn't access reward per block method of the masterchef");
         }
-        const rewardsPerWeek = rewardPerBlock / 1e18 * multiplier * 604800 / 2;
-                
+              
+
+        const rewardTokenAddress = await masterchefProvider.makeMasterchefCall(masterchefJson.rewardTokenFunctionName, null, masterchefJson.rewardTokenAddress);
+        const totalAllocationPoints = await masterchefProvider.makeMasterchefCall('totalAllocPoint', null, null);  
         const poolInfoProvider = new PoolInfoProvider({
-            masterchef: masterchef, 
-            chefContract: masterchefContractInfo.chefContract, 
+            masterchefProvider: masterchefProvider, 
+            masterchefContract: masterchefJson.chefContract, 
             rewardTokenAddress: rewardTokenAddress, 
             totalAllocationPoints: Number(totalAllocationPoints),
-            rewardsPerWeek: Number(rewardsPerWeek)
+            rewardsPerWeek: Number(rewardsPerWeek),
+            lpTokenPropertyName: masterchefJson.lpTokenPropertyName || null
         });
         
         let farmPools = [];
@@ -83,9 +71,9 @@ function FarmInfoProvider() {
         });
 
         const farmInfo = {
-            name: masterchefContractInfo.farm,
-            farmId: masterchefContractInfo.farmId,
-            masterchefAddress: masterchefContractInfo.chefContract,
+            name: masterchefJson.farm,
+            farmId: masterchefJson.farmId,
+            masterchefAddress: masterchefJson.chefContract,
             pools: farmPools,
             rewardToken: {
                 symbol: prices[rewardTokenAddress]?.symbol,
@@ -99,12 +87,7 @@ function FarmInfoProvider() {
 
         return farmInfo;
     }
-
-    function getMasterChef(chefAbi, chefAddress) {
-        const masterChefContract = new web3.eth.Contract(chefAbi, chefAddress);
-        return masterChefContract.methods;
-    }
-
+    
     function getBestAprPool(pools) {
         let bestAprPool = null; 
         if (pools && pools.length > 0) {            
