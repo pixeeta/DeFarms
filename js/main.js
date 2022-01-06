@@ -2,10 +2,10 @@ const DEBUG = false;
 const DEBUG_FARM_ID = 2;
 const DEBUG_POOL_ID = 1;
 
-let appInitializer = new AppInitializer();
+let appInitializer = null;
 let web3 = null;
 let storageProvider = null;
-let userWalletIsConnected = undefined;
+let userWalletIsConnected = false;
 let prices = [];
 let farmInfoViewModels = [];
 
@@ -24,9 +24,9 @@ async function main() {
 		const tokenPriceProvider = new TokenPriceProvider();
 		prices = await tokenPriceProvider.getHarmonyPrices();
 
-		const farmAccordionSettings = storageProvider.getFarmAccordionSettings();
 		const farmInfoProvider = new FarmInfoProvider();
 		const masterChefContractList = HARMONY_MASTERCHEF_CONTRACT_LIST;
+		const farmAccordionSettings = storageProvider.getFarmAccordionSettings();
 		if (DEBUG) {		
 			const farmInfo = await farmInfoProvider.getFarmInfo(masterChefContractList[DEBUG_FARM_ID]);
 			console.log(farmInfo);
@@ -73,7 +73,6 @@ function bindFarmInfoControls(farmHtml) {
 	$(farmHtml).find('.fold-farm-info-button').on('click', (ele) => {
 		const target = ele.target;
 		const farmInfoId = $(target).data('farm-info-id');
-
 		const caret = $(target).find('.caret');
 		if ($(caret).hasClass('up')) {
 			$(caret).removeClass('up');

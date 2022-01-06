@@ -10,11 +10,11 @@ function AppInitializer() {
     }
 
     async function initializeBlockchainConnection() {
-        // let networkApiUrl = 'https://rpc.mtv.ac';
-        let networkApiUrl = 'https://api.s0.t.hmny.io';
+        // const networkApiUrl = 'https://rpc.mtv.ac';
+        const networkApiUrl = 'https://api.s0.t.hmny.io';
         let connectionInitialized = false;
         if (window.ethereum) {
-            let walletAccounts = await window.ethereum.request({ method: 'eth_accounts' });
+            const walletAccounts = await window.ethereum.request({ method: 'eth_accounts' });
             if (walletAccounts !== undefined && walletAccounts.length > 0) {
                 console.log('Found previously cached wallet, initializing user wallet connection');
                 connectionInitialized = await initializeWallet(networkApiUrl);
@@ -39,9 +39,9 @@ function AppInitializer() {
         if (window.ethereum) {
             web3 = new Web3(window.ethereum);
             try {
-                let accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                storageProvider.setUserWalletAddress(accounts[0]);
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                 userWalletIsConnected = true;
+                storageProvider.setUserWalletAddress(accounts[0]);
                 isInitialized = true;
             } catch {
                 web3 = new Web3(new Web3.providers.HttpProvider(networkApiUrl))
@@ -127,8 +127,10 @@ function AppInitializer() {
         });
     
         $('#connect-wallet-button').click(async () => {
-            await initializeWallet();
-            window.location.reload();
+            let isInitialized = await initializeWallet();
+            if (isInitialized) {
+                window.location.reload();
+            }
         });
     }
 }
