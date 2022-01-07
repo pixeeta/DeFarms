@@ -1,5 +1,5 @@
 const DEBUG = false;
-const DEBUG_FARM_ID = 37;
+const DEBUG_FARM_ID = 0;
 const DEBUG_POOL_ID = null;
 
 let appInitializer = null;

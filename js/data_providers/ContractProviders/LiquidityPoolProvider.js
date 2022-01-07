@@ -26,19 +26,24 @@ function LiquidityPoolProvider(lpTokenAddress, type) {
                 default: 
                     return getUniTokenContract(lpTokenAddress);
                 case 'uniswap':
-                    return getUniTokenContract(lpTokenAddress);           
+                    return getUniTokenContract(lpTokenAddress);   
+                case 'erc-20':
+                    self.isSingleTokenPool = true;
+                    return getErc20TokenContract(lpTokenAddress);           
             }
         }
         else {
             try {
                 let lpContract = getUniTokenContract(lpTokenAddress);
                 await lpContract.methods.token0().call();
+                storageProvider.setTokenType(lpTokenAddress, 'uniswap')
                 return lpContract;
             } catch { }
             try {
                 let lpContract = getErc20TokenContract(lpTokenAddress);
                 await lpContract.methods.name().call();
                 self.isSingleTokenPool = true;
+                storageProvider.setTokenType(lpTokenAddress, 'erc-20')
                 return lpContract;
             } catch { }
 

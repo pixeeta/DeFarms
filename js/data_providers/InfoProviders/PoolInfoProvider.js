@@ -31,7 +31,9 @@ function PoolInfoProvider(options) {
             lpTokenPropertyName = self.lpTokenPropertyName;
         }
         const pool = await self.masterchefProvider.callFunction('poolInfo', [ poolId ] , null);
-        const lpProvider = new LiquidityPoolProvider(pool[lpTokenPropertyName], null)
+        const lpTokenAddress = pool[lpTokenPropertyName];
+        const lpTokenType = storageProvider.getTokenType(lpTokenAddress);
+        const lpProvider = new LiquidityPoolProvider(lpTokenAddress, lpTokenType)
         await lpProvider.init();
 
         const poolName = await lpProvider.callFunction('name', null, null);
@@ -46,7 +48,7 @@ function PoolInfoProvider(options) {
         let token0Data =  null;
         let token1Data =  null;
         if (lpProvider.isSingleTokenPool) {
-            token0Address = lpProvider.lpTokenAddress;
+            token0Address = lpTokenAddress;
             token0Data = await getTokenData(token0Address, "erc20");
         } else {
             token0Address = await lpProvider.callFunction('token0', null, null);
@@ -116,7 +118,7 @@ function PoolInfoProvider(options) {
         }
 
         const poolInfo = {
-            address: pool[lpTokenPropertyName],
+            address: lpTokenAddress,
             isSingleTokenPool: lpProvider.isSingleTokenPool,
             poolId: poolId,
             symbol: poolSymbol,

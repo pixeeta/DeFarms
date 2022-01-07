@@ -45,6 +45,13 @@ function StorageProvider() {
         return setUserWalletAddress(address);
     }
 
+    self.getTokenType = (address) => {
+        return getTokenType(address)
+    }
+    self.setTokenType = (address, type) => {
+        return setTokenType(address, type)
+    }
+
 
     function init(){
         return self;
@@ -103,5 +110,28 @@ function StorageProvider() {
         };
 
         window.localStorage.setItem('farmAccordionSettings', JSON.stringify(farmAccordionSettings));
+    }
+
+    function getTokenType(address) {
+        let tokenType = null;
+        let savedTokens = JSON.parse(window.localStorage.getItem('lpTokens'));
+        if (savedTokens) {
+            tokenType = savedTokens[address]?.type;
+        }
+
+        return tokenType;
+    }
+
+    function setTokenType(address, type) {
+        let tokenTypes = JSON.parse(window.localStorage.getItem('lpTokens'));
+        if (!tokenTypes) {
+            tokenTypes = {};
+        }
+
+        tokenTypes[address] = {
+            type: type
+        };
+
+        window.localStorage.setItem('lpTokens', JSON.stringify(tokenTypes));
     }
 }
