@@ -47,6 +47,9 @@ function FarmInfoProvider() {
         });
         
         let farmPools = [];
+        if (DEBUG && DEBUG_POOL_ID !== null) {
+            poolIds = [DEBUG_POOL_ID];
+        }
         await Promise.all(poolIds.map(async (poolId) => {	
             try {
                 farmPools[poolId] = await poolInfoProvider.getPoolInfo(poolId);

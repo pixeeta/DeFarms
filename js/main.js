@@ -1,5 +1,5 @@
 const DEBUG = false;
-const DEBUG_FARM_ID = 0;
+const DEBUG_FARM_ID = 37;
 const DEBUG_POOL_ID = null;
 
 let appInitializer = null;
@@ -26,6 +26,7 @@ async function main() {
 
 		const farmInfoProvider = new FarmInfoProvider();
 		const masterChefContractList = HARMONY_MASTERCHEF_CONTRACT_LIST;
+		renderFarmInfoContainers(masterChefContractList);
 		const farmAccordionSettings = storageProvider.getFarmAccordionSettings();
 		if (DEBUG) {		
 			const farmInfo = await farmInfoProvider.getFarmInfo(masterChefContractList[DEBUG_FARM_ID]);
@@ -57,41 +58,50 @@ async function main() {
 	enableHeaderButtons();
 }
 
+function renderFarmInfoContainers(masterChefContractList) {
+	const templateHtml = $('#farm-info-container-template').html();
+	const compiledTemplate = Handlebars.compile(templateHtml);
+	$('#content-container').append(compiledTemplate(masterChefContractList));	
+	bindFarmInfoControls($('#content-container'));
+}
+
 function renderFarmInfo(farmInfo, i, farmAccordionSettings) {
-	const templateHtml = $('#farm-info-template').html();
+	const templateHtml = $('#farm-info-content-template').html();
 	const compiledTemplate = Handlebars.compile(templateHtml);
 	const farmInfoViewModel = new FarmInfoViewModel(farmInfo, i, farmAccordionSettings);
 	if (farmInfoViewModel.hasData) {
 		farmInfoViewModels.push(farmInfoViewModel);
-		$('#content-container').append(compiledTemplate(farmInfoViewModel));	
-		const farmHtml = $('#content-container').find('.farm-info').last();
-		bindFarmInfoControls(farmHtml);
+		$farmContainer =  $('.farm-info[data-farm-id=' + farmInfoViewModel.farmId + ']');
+		$farmContainer.empty();
+		$farmContainer.append(compiledTemplate(farmInfoViewModel));	
+		bindFarmInfoControls($farmContainer);
+		$($farmContainer).show();
 	}
 }
 
-function bindFarmInfoControls(farmHtml) {
-	$(farmHtml).find('.fold-farm-info-button').on('click', (ele) => {
+function bindFarmInfoControls(element) {
+	$(element).find('.fold-farm-info-button').on('click', (ele) => {
 		const target = ele.target;
-		const farmInfoId = $(target).data('farm-info-id');
+		const farmId = $(target).data('farm-id');
 		const caret = $(target).find('.caret');
 		if ($(caret).hasClass('up')) {
 			$(caret).removeClass('up');
 			$(caret).addClass('down');
-			hideFarmInfo(farmInfoId);
-			storageProvider.setAccordionSettingsForFarm(farmInfoId, true);
+			hideFarmInfo(farmId);
+			storageProvider.setAccordionSettingsForFarm(farmId, true);
 		} else {
 			$(caret).removeClass('down');
 			$(caret).addClass('up');			
-			showFarmInfo(farmInfoId);
-			storageProvider.setAccordionSettingsForFarm(farmInfoId, false);
+			showFarmInfo(farmId);
+			storageProvider.setAccordionSettingsForFarm(farmId, false);
 		}
 	});
 }
 
 function hideFarmInfo(farmInfoId) {
-	$('#' + farmInfoId).find('.farm-pools-container').css('max-height', 0);
+	$('.farm-info[data-farm-id=' + farmInfoId + ']').find('.farm-pools-container').addClass('collapsed');
 }
 
 function showFarmInfo(farmInfoId) {
-	$('#' + farmInfoId).find('.farm-pools-container').css('max-height', '20000px');
+	$('.farm-info[data-farm-id=' + farmInfoId + ']').find('.farm-pools-container').removeClass('collapsed');
 }

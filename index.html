@@ -45,118 +45,131 @@
 	</div>
 	<div id="content-container"></div>
 </body>
-<script id="farm-info-template" type="text/x-handlebars-template">
-    <div class="farm-info" id="{{nameWithouthSpaces}}-farm-info" data-farm-id="{{farmId}}" data-farm-masterchef-address="{{masterchefAddress}}">
+
+<script id="farm-info-container-template" type="text/x-handlebars-template">
+	{{#each .}}
+    <div class="farm-info" data-farm-id="{{farmId}}" data-farm-masterchef-address="{{chefContract}}">
 		<div class="farm-info-header">
-			<div class="farm-name">{{name}}</div>
-			<div class="farm-info-right-side-container">
-				<div class="farm-discovered-pools-number">
-					<label>Discovered pools:</label>
-					<span>{{totalDiscoveredPools}}/{{totalMasterchefPools}}</span>
-				</div>
-				<div class="farm-incentivised-pools-number">
-					<label>Incentivized pools:</label>
-					<span>{{incentivisedPools}}</span>
-				</div>
-				<div class="farm-staked-pools-number">
-					<label>Staked pools:</label>
-					<span>{{numberOfStakedPools}}</span>
-				</div>
-				<div class="farm-best-apr">
-					<label>Best APR:</label>
-					<span>{{formattedFarmBestApr}}</span>
-				</div>
-				<div class="button-container">
-					<div class="fold-farm-info-button" data-farm-info-id="{{nameWithouthSpaces}}-farm-info">
-						<div class="caret-icon">
-							<div class="caret {{#if isCollapsed}}down{{else}}up{{/if}}"></div>
-						</div>
+			<div class="farm-name">{{farm}}</div>
+			<div class="loading-spinner-container">
+				<div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+				<span>Loading data...</span>
+			</div>
+		</div>
+    </div>
+	{{/each}}
+</script>
+
+<script id="farm-info-content-template" type="text/x-handlebars-template">
+	<div class="farm-info-header">
+		<div class="farm-name">{{name}}</div>
+		<div class="farm-info-right-side-container">
+			<div class="farm-discovered-pools-number">
+				<label>Discovered pools:</label>
+				<span>{{totalDiscoveredPools}}/{{totalMasterchefPools}}</span>
+			</div>
+			<div class="farm-incentivised-pools-number">
+				<label>Incentivized pools:</label>
+				<span>{{incentivisedPools}}</span>
+			</div>
+			<div class="farm-staked-pools-number">
+				<label>Staked pools:</label>
+				<span>{{numberOfStakedPools}}</span>
+			</div>
+			<div class="farm-best-apr">
+				<label>Best APR:</label>
+				<span>{{formattedFarmBestApr}}</span>
+			</div>
+			<div class="button-container">
+				<div class="fold-farm-info-button" data-farm-id="{{farmId}}">
+					<div class="caret-icon">
+						<div class="caret {{#if isCollapsed}}down{{else}}up{{/if}}"></div>
 					</div>
 				</div>
 			</div>
 		</div>
-        <div class="farm-pools-container {{#if isCollapsed}}collapsed{{/if}}">
-            <ul class="farm-pools-list">
-                {{#each pools}}
-					{{#if address}}
-					<li class="pool-item {{isBestAprClass}} {{isStakedClass}} {{isIncentivisedClass}}" data-farm-masterchef-address="{{../masterchefAddress}}" data-pool-address="{{address}}" data-pool-id="{{poolId}}">
-						<div class="pool-header">
-							<span class="pool-pair">{{token0Symbol}} - {{token1Symbol}}</span>
-						</div>
-						<div class="pool-body">	
-							<div class="pool-details">
-								<div class="pool-token0-price">
-									<label>{{token0Symbol}}:</label>
-									<span>{{token0FormattedPrice}}</span>
-								</div>					
-								<div class="pool-token1-price">
-									<label>{{token1Symbol}}:</label>
-									<span>{{token1FormattedPrice}}</span>
-								</div>					
-								<div class="pool-tvl">
-									<label>Pool TVL:</label>
-									<span>{{formattedTvl}}</span>
-								</div>
-								<div class="pool-tvl">
-									<label>Staked TVL:</label>
-									<span>{{formattedStakedTvl}}</span>
-								</div>
-								<div class="pool-reward-allocation">
-									<label>Reward allocation:</label>
-									<span>{{formattedPoolRewardAllocation}}</span>
-								</div>
-								<div class="pool-apr">
-									<label>APR:</label>
-									<span>{{formattedApr}}</span>
-								</div>
-							</div>	
-							<div class="pool-staking-details">				
-								<div class="pool-staking-details-text">
-									<label>You are staking:</label>
-									<div>
-										<span class="big-text">{{formattedStakedLpTokenAmount}}</span><span class="small-text"> LP tokens</span>
-									</div>
-								</div>
-								<div class="pool-staking-details-text">
-									<label>Your stake is:</label>
-									<span class="big-text">{{formattedPercentOfPool}}</span><span class="small-text"> of the total pool</span>
-								</div>
-								<div class="pool-staking-details-text">
-									<label>Your LP is:</label>
-									<span class="big-text">{{formattedStakedToken0Amount}} {{token0Symbol}}</span>
-									<span class="small-text">and</span>
-									<span class="big-text">{{formattedStakedToken1Amount}} {{token1Symbol}}</span>
-								</div>
-								<div class="pool-staking-details-text">
-									<label>Your stake value is:</label>
-									<span class="bigger-text">{{formattedStakedValue}}</span>
+	</div>
+	<div class="farm-pools-container {{#if isCollapsed}}collapsed{{/if}}">
+		<ul class="farm-pools-list">
+			{{#each pools}}
+				{{#if address}}
+				<li class="pool-item {{isBestAprClass}} {{isStakedClass}} {{isIncentivisedClass}}" data-farm-masterchef-address="{{../masterchefAddress}}" data-pool-address="{{address}}" data-pool-id="{{poolId}}">
+					<div class="pool-header">
+						<span class="pool-pair">{{token0Symbol}} - {{token1Symbol}}</span>
+					</div>
+					<div class="pool-body">	
+						<div class="pool-details">
+							<div class="pool-token0-price">
+								<label>{{token0Symbol}}:</label>
+								<span>{{token0FormattedPrice}}</span>
+							</div>					
+							<div class="pool-token1-price">
+								<label>{{token1Symbol}}:</label>
+								<span>{{token1FormattedPrice}}</span>
+							</div>					
+							<div class="pool-tvl">
+								<label>Pool TVL:</label>
+								<span>{{formattedTvl}}</span>
+							</div>
+							<div class="pool-tvl">
+								<label>Staked TVL:</label>
+								<span>{{formattedStakedTvl}}</span>
+							</div>
+							<div class="pool-reward-allocation">
+								<label>Reward allocation:</label>
+								<span>{{formattedPoolRewardAllocation}}</span>
+							</div>
+							<div class="pool-apr">
+								<label>APR:</label>
+								<span>{{formattedApr}}</span>
+							</div>
+						</div>	
+						<div class="pool-staking-details">				
+							<div class="pool-staking-details-text">
+								<label>You are staking:</label>
+								<div>
+									<span class="big-text">{{formattedStakedLpTokenAmount}}</span><span class="small-text"> LP tokens</span>
 								</div>
 							</div>
+							<div class="pool-staking-details-text">
+								<label>Your stake is:</label>
+								<span class="big-text">{{formattedPercentOfPool}}</span><span class="small-text"> of the total pool</span>
+							</div>
+							<div class="pool-staking-details-text">
+								<label>Your LP is:</label>
+								<span class="big-text">{{formattedStakedToken0Amount}} {{token0Symbol}}</span>
+								<span class="small-text">and</span>
+								<span class="big-text">{{formattedStakedToken1Amount}} {{token1Symbol}}</span>
+							</div>
+							<div class="pool-staking-details-text">
+								<label>Your stake value is:</label>
+								<span class="bigger-text">{{formattedStakedValue}}</span>
+							</div>
 						</div>
-						<div class="pool-footer">
-							<span class="pool-id">{{poolId}}</span>
-							<span class="pool-token-type">{{lpTokenType}}</span>
-						</div>
-						<div class="best-apr-ribbon">
-							<span>Best APR</span>
-						</div>
-						<div class="pool-staked-ribbon">
-							<span>Staked</span>
-						</div>
-					</li>
-					{{else}}
-					<li class="pool-item">
-						<div class="pool-header">
-							<span class="pool-id">N/A</span>
-						</div>
-						<div class="pool-body">							
-							<span class="pool-error">There was a problem with retrieving pool data</span>
-						</div>
-					</li>
-					{{/if}}
-                {{/each}}
-            </ul>
-        </div>
-    </div>
+					</div>
+					<div class="pool-footer">
+						<span class="pool-id">{{poolId}}</span>
+						<span class="pool-token-type">{{lpTokenType}}</span>
+					</div>
+					<div class="best-apr-ribbon">
+						<span>Best APR</span>
+					</div>
+					<div class="pool-staked-ribbon">
+						<span>Staked</span>
+					</div>
+				</li>
+				{{else}}
+				<li class="pool-item">
+					<div class="pool-header">
+						<span class="pool-id">N/A</span>
+					</div>
+					<div class="pool-body">							
+						<span class="pool-error">There was a problem with retrieving pool data</span>
+					</div>
+				</li>
+				{{/if}}
+			{{/each}}
+		</ul>
+	</div>
 </script>
 <html>

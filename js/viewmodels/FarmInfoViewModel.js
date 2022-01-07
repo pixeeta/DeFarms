@@ -7,7 +7,7 @@ function FarmInfoViewModel(farmInfo, farmAccordionSettings) {
         
         this.isCollapsed = false;
         if (farmAccordionSettings){
-            this.accordionSettings = farmAccordionSettings[this.nameWithouthSpaces + '-farm-info'];
+            this.accordionSettings = farmAccordionSettings[this.farmId];
             if (this.accordionSettings) {
                 this.isCollapsed = this.accordionSettings.isCollapsed;
             }

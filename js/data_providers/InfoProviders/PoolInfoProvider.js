@@ -26,17 +26,13 @@ function PoolInfoProvider(options) {
     init();
 
     async function getPoolInfo(poolId) {
-        if (DEBUG && DEBUG_POOL_ID === poolId) {
-            // put a breakpoint here
-            console.log ('hit debugging pool');
-        }
-
         let lpTokenPropertyName = "lpToken";
         if (self.lpTokenPropertyName) {
             lpTokenPropertyName = self.lpTokenPropertyName;
         }
         const pool = await self.masterchefProvider.callFunction('poolInfo', [ poolId ] , null);
-        const lpProvider = new LiquidityPoolProvider(pool[lpTokenPropertyName], "uniswap")
+        const lpProvider = new LiquidityPoolProvider(pool[lpTokenPropertyName], null)
+        await lpProvider.init();
 
         const poolName = await lpProvider.callFunction('name', null, null);
         const poolSymbol = await lpProvider.callFunction('symbol', null, null);
@@ -44,20 +40,29 @@ function PoolInfoProvider(options) {
         const poolDecimals = Number(await lpProvider.callFunction('decimals', null, null));
         const reserves = await lpProvider.callFunction('getReserves', null, null);
         const poolTotalSupply = await lpProvider.callFunction('totalSupply', null, null) / Math.pow(10, poolDecimals);
-                
-        const token0Address = await lpProvider.callFunction('token0', null, null);
-        const token1Address = await lpProvider.callFunction('token1', null, null);
-        const token0Data = await getTokenData(token0Address, "erc20");
-        const token1Data = await getTokenData(token1Address, "erc20");
+             
+        let token0Address = null;
+        let token1Address = null;
+        let token0Data =  null;
+        let token1Data =  null;
+        if (lpProvider.isSingleTokenPool) {
+            token0Address = lpProvider.lpTokenAddress;
+            token0Data = await getTokenData(token0Address, "erc20");
+        } else {
+            token0Address = await lpProvider.callFunction('token0', null, null);
+            token1Address = await lpProvider.callFunction('token1', null, null);
+            token0Data = await getTokenData(token0Address, "erc20");
+            token1Data = await getTokenData(token1Address, "erc20");
+        }
 
         ///////////////////////////////////////
         ///////////////////////////////////////
         ///////////////////////////////////////
 
-        const q0 = Number(reserves[0]) / Math.pow(10, token0Data.decimals);
-        const q1 = Number(reserves[1]) / Math.pow(10, token1Data.decimals);	
+        const q0 = lpProvider.isSingleTokenPool ? poolTotalSupply : Number(reserves[0]) / Math.pow(10, token0Data.decimals);
+        const q1 = lpProvider.isSingleTokenPool ? 0 : Number(reserves[1]) / Math.pow(10, token1Data.decimals);	
         let p0 = prices[token0Address]?.usd;
-        let p1 = prices[token1Address]?.usd;
+        let p1 = lpProvider.isSingleTokenPool ? 0 : prices[token1Address]?.usd;
 
         if (isNaN(p0) || p0 === null)
         {
@@ -112,6 +117,7 @@ function PoolInfoProvider(options) {
 
         const poolInfo = {
             address: pool[lpTokenPropertyName],
+            isSingleTokenPool: lpProvider.isSingleTokenPool,
             poolId: poolId,
             symbol: poolSymbol,
             name: poolName,
@@ -131,14 +137,14 @@ function PoolInfoProvider(options) {
                 address: token0Address,
                 price: p0,
                 formattedPrice: !isNaN(p0) ? p0.toFixed(4) : '--',
-                reserves: reserves[0]
+                reserves: lpProvider.isSingleTokenPool ? q0 : reserves[0]
             },
             token1: { 
-                symbol: token1Data.symbol,
-                address: token1Address,
-                price: p1,
-                formattedPrice: !isNaN(p1) ? p1.toFixed(4) : '--',
-                reserves: reserves[1]
+                symbol: lpProvider.isSingleTokenPool ? null : token1Data.symbol,
+                address: lpProvider.isSingleTokenPool ? null : token1Address,
+                price: lpProvider.isSingleTokenPool ? null : p1,
+                formattedPrice: lpProvider.isSingleTokenPool ? null : !isNaN(p1) ? p1.toFixed(4) : '--',
+                reserves: lpProvider.isSingleTokenPool ? null : reserves[1]
             },
             technicals: {
                 totalSupply: poolTotalSupply,

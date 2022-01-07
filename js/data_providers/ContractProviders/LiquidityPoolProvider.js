@@ -3,24 +3,47 @@ function LiquidityPoolProvider(lpTokenAddress, type) {
 
     self.lpTokenAddress = null;
     self.poolContract = null;
+    self.isSingleTokenPool = false;
     
+    self.init = () => {
+        return init();
+    }
+
     self.callFunction = (functionName, params, fallback) => {
         return callFunction(self.poolContract, functionName, params, fallback);
     }
 
-    function init() {
+    async function init() {
         self.lpTokenAddress = lpTokenAddress;
-        self.poolContract = getLpContract(lpTokenAddress, type);
+        self.poolContract = await getLpContract(lpTokenAddress, type);
     }
 
-    init();
+    // init();
 
-    function getLpContract(lpTokenAddress, type) {
-        switch(type) {
-            default: 
-                return getUniTokenContract(lpTokenAddress);
-            case 'uniswap':
-                return getUniTokenContract(lpTokenAddress);           
+    async function getLpContract(lpTokenAddress, type) {
+        if (type) {
+            switch(type) {
+                default: 
+                    return getUniTokenContract(lpTokenAddress);
+                case 'uniswap':
+                    return getUniTokenContract(lpTokenAddress);           
+            }
+        }
+        else {
+            try {
+                let lpContract = getUniTokenContract(lpTokenAddress);
+                await lpContract.methods.token0().call();
+                return lpContract;
+            } catch { }
+            try {
+                let lpContract = getErc20TokenContract(lpTokenAddress);
+                await lpContract.methods.name().call();
+                self.isSingleTokenPool = true;
+                return lpContract;
+            } catch { }
+
+            console.log('Couldn\'t match the LP contract type');
+            return null;
         }
     }
 
@@ -31,7 +54,7 @@ function LiquidityPoolProvider(lpTokenAddress, type) {
 
     function getErc20TokenContract(address) {
         const tokenContract = new web3.eth.Contract(ERC20_ABI, address);
-        return tokenContract.methods;
+        return tokenContract;
     }
 
     async function callFunction(poolContract, functionName, params, fallback) {
