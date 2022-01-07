@@ -4,8 +4,8 @@ function MasterchefProvider(masterchefJson) {
     self.masterchefJson = null;
     self.masterchef = null;
     
-    self.makeMasterchefCall = (functionName, params, fallback) => {
-        return makeMasterchefCall(self.masterchef, functionName, params, fallback);
+    self.callFunction = (functionName, params, fallback) => {
+        return callFunction(self.masterchef, functionName, params, fallback);
     }
 
     function init() {
@@ -17,16 +17,16 @@ function MasterchefProvider(masterchefJson) {
 
     function getMasterChef(chefAbi, chefAddress) {
         const masterChefContract = new web3.eth.Contract(chefAbi, chefAddress);
-        return masterChefContract.methods;
+        return masterChefContract;
     }
 
-    async function makeMasterchefCall(masterchef, functionName, params, fallback) {
+    async function callFunction(masterchef, functionName, params, fallback) {
         let result;
         try {
             if (params) {
-                result = await (masterchef[functionName].apply(null, params)).call();
+                result = await (masterchef.methods[functionName].apply(null, params)).call();
             } else {
-                result = await masterchef[functionName]().call();
+                result = await masterchef.methods[functionName]().call();
             }
         } catch {
             result = fallback;

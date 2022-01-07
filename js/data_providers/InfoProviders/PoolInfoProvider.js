@@ -2,7 +2,7 @@ function PoolInfoProvider(options) {
     const self = this;
 
     self.masterchefProvider = null;
-    self.masterchefContract = null;
+    self.masterchefContractAddress = null;
     self.rewardTokenAddress = null;
     self.rewardsPerWeek = null;
     self.totalAllocationPoints = null;
@@ -14,7 +14,7 @@ function PoolInfoProvider(options) {
 
     function init() {
         self.masterchefProvider = options.masterchefProvider;
-        self.masterchefContract = options.masterchefContract;
+        self.masterchefContractAddress = options.masterchefContractAddress;
         self.rewardTokenAddress = options.rewardTokenAddress;
         self.rewardsPerWeek = options.rewardsPerWeek;
         self.totalAllocationPoints = options.totalAllocationPoints;
@@ -35,18 +35,18 @@ function PoolInfoProvider(options) {
         if (self.lpTokenPropertyName) {
             lpTokenPropertyName = self.lpTokenPropertyName;
         }
-        const pool = await self.masterchefProvider.makeMasterchefCall('poolInfo', [ poolId ] , null);
-        const lpTokenContract = getTokenContract(pool[lpTokenPropertyName], "uniswap");
+        const pool = await self.masterchefProvider.callFunction('poolInfo', [ poolId ] , null);
+        const lpProvider = new LiquidityPoolProvider(pool[lpTokenPropertyName], "uniswap")
 
-        const poolName = await lpTokenContract.name().call();
-        const poolSymbol = await lpTokenContract.symbol().call();
-        
-        const poolDecimals = Number(await lpTokenContract.decimals().call());
-        const reserves = await lpTokenContract.getReserves().call();
-        const poolTotalSupply = await lpTokenContract.totalSupply().call() / Math.pow(10, poolDecimals);
+        const poolName = await lpProvider.callFunction('name', null, null);
+        const poolSymbol = await lpProvider.callFunction('symbol', null, null);
+
+        const poolDecimals = Number(await lpProvider.callFunction('decimals', null, null));
+        const reserves = await lpProvider.callFunction('getReserves', null, null);
+        const poolTotalSupply = await lpProvider.callFunction('totalSupply', null, null) / Math.pow(10, poolDecimals);
                 
-        const token0Address = await lpTokenContract.token0().call();
-        const token1Address = await lpTokenContract.token1().call();
+        const token0Address = await lpProvider.callFunction('token0', null, null);
+        const token1Address = await lpProvider.callFunction('token1', null, null);
         const token0Data = await getTokenData(token0Address, "erc20");
         const token1Data = await getTokenData(token1Address, "erc20");
 
@@ -76,7 +76,7 @@ function PoolInfoProvider(options) {
         
         const tvl = q0 * p0 + q1 * p1;
         const poolPrice = tvl / poolTotalSupply;
-        const poolStaked = await lpTokenContract.balanceOf(self.masterchefContract).call() / Math.pow(10, poolDecimals);
+        const poolStaked = await  lpProvider.callFunction('balanceOf', [self.masterchefContractAddress], null) / Math.pow(10, poolDecimals);
         const stakedTvl = poolStaked * poolPrice;
 
         const poolAllocationPoints = Number(pool.allocPoint);
@@ -98,7 +98,7 @@ function PoolInfoProvider(options) {
         let stakedQuantity1 = null;
         let isStaked = false;
         if (userWalletIsConnected){
-            const userInfo = await self.masterchefProvider.makeMasterchefCall('userInfo', [ poolId, storageProvider.getUserWalletAddress()], null);
+            const userInfo = await self.masterchefProvider.callFunction('userInfo', [ poolId, storageProvider.getUserWalletAddress()], null);
             stakedLpTokenAmount = Number(userInfo.amount) / Math.pow(10, poolDecimals);
             stakedValue = stakedLpTokenAmount * poolPrice;
             if (stakedLpTokenAmount > 0) {
@@ -171,11 +171,6 @@ function PoolInfoProvider(options) {
             case "erc20": 
                 return getErc20TokenContract(address);
         }
-    }
-
-    function getUniTokenContract(address) {
-        const tokenContract = new web3.eth.Contract(UNI_ABI, address);
-        return tokenContract.methods;
     }
 
     function getErc20TokenContract(address) {

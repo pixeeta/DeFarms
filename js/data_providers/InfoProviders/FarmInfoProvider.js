@@ -14,15 +14,15 @@ function FarmInfoProvider() {
     async function getFarmInfo(masterchefJson) {
         const masterchefProvider = new MasterchefProvider(masterchefJson);
 
-        let poolLength = await masterchefProvider.makeMasterchefCall('poolLength', null, masterchefJson.poolLength);
+        let poolLength = await masterchefProvider.callFunction('poolLength', null, masterchefJson.poolLength);
         let poolIds = [];	
         for (let i = 0; i < poolLength; i++) {
             poolIds.push(i);
         }
 
         const blockNumber = await web3.eth.getBlockNumber();
-        let multiplier = await masterchefProvider.makeMasterchefCall('getMultiplier', [blockNumber, blockNumber+1], 1);
-        let rewardsAmount = await masterchefProvider.makeMasterchefCall(masterchefJson.blockRewardFunctionName, null, null);
+        let multiplier = await masterchefProvider.callFunction('getMultiplier', [blockNumber, blockNumber+1], 1);
+        let rewardsAmount = await masterchefProvider.callFunction(masterchefJson.blockRewardFunctionName, null, null);
         let rewardsPerWeek = null;
         if (rewardsAmount) {
             if (masterchefJson.areRewardsReleasedPerSecond) {
@@ -35,11 +35,11 @@ function FarmInfoProvider() {
         }
               
 
-        const rewardTokenAddress = await masterchefProvider.makeMasterchefCall(masterchefJson.rewardTokenFunctionName, null, masterchefJson.rewardTokenAddress);
-        const totalAllocationPoints = await masterchefProvider.makeMasterchefCall('totalAllocPoint', null, null);  
+        const rewardTokenAddress = await masterchefProvider.callFunction(masterchefJson.rewardTokenFunctionName, null, masterchefJson.rewardTokenAddress);
+        const totalAllocationPoints = await masterchefProvider.callFunction('totalAllocPoint', null, null);  
         const poolInfoProvider = new PoolInfoProvider({
             masterchefProvider: masterchefProvider, 
-            masterchefContract: masterchefJson.chefContract, 
+            masterchefContractAddress: masterchefJson.chefContract, 
             rewardTokenAddress: rewardTokenAddress, 
             totalAllocationPoints: Number(totalAllocationPoints),
             rewardsPerWeek: Number(rewardsPerWeek),
