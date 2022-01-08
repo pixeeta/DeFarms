@@ -62,23 +62,24 @@ function PoolInfoProvider(options) {
         ///////////////////////////////////////
 
         const q0 = lpProvider.isSingleTokenPool ? poolTotalSupply : Number(reserves[0]) / Math.pow(10, token0Data.decimals);
-        const q1 = lpProvider.isSingleTokenPool ? 0 : Number(reserves[1]) / Math.pow(10, token1Data.decimals);	
+        const q1 = lpProvider.isSingleTokenPool ? null : Number(reserves[1]) / Math.pow(10, token1Data.decimals);	
         let p0 = prices[token0Address]?.usd;
-        let p1 = lpProvider.isSingleTokenPool ? 0 : prices[token1Address]?.usd;
+        let p1 = lpProvider.isSingleTokenPool ? null : prices[token1Address]?.usd;
+        if (!lpProvider.isSingleTokenPool) {
+            if (isNaN(p0) || p0 === null)
+            {
+                p0 = q1 * p1 / q0;
+                prices[token0Address] = { usd : p0, symbol: token0Data.symbol };
+            }
+            if (isNaN(p1) || p1 === null)
+            {
+                p1 = q0 * p0 / q1;
+                prices[token1Address] = { usd : p1, symbol: token1Data.symbol };
+            }
 
-        if (isNaN(p0) || p0 === null)
-        {
-            p0 = q1 * p1 / q0;
-            prices[token0Address] = { usd : p0, symbol: token0Data.symbol };
-        }
-        if (isNaN(p1) || p1 === null)
-        {
-            p1 = q0 * p0 / q1;
-            prices[token1Address] = { usd : p1, symbol: token1Data.symbol };
-        }
-
-        if (isNaN(p0) || p1 === null || isNaN(p1) || p1 === null) {
-            console.log("prices not found for: " + token0Data.symbol, token1Data.symbol)
+            if (isNaN(p0) || p1 === null || isNaN(p1) || p1 === null) {
+                console.log("prices not found for: " + token0Data.symbol, token1Data.symbol)
+            }
         }
         
         const tvl = q0 * p0 + q1 * p1;
@@ -138,14 +139,12 @@ function PoolInfoProvider(options) {
                 symbol: token0Data.symbol,
                 address: token0Address,
                 price: p0,
-                formattedPrice: !isNaN(p0) ? p0.toFixed(4) : '--',
                 reserves: lpProvider.isSingleTokenPool ? q0 : reserves[0]
             },
             token1: { 
                 symbol: lpProvider.isSingleTokenPool ? null : token1Data.symbol,
                 address: lpProvider.isSingleTokenPool ? null : token1Address,
                 price: lpProvider.isSingleTokenPool ? null : p1,
-                formattedPrice: lpProvider.isSingleTokenPool ? null : !isNaN(p1) ? p1.toFixed(4) : '--',
                 reserves: lpProvider.isSingleTokenPool ? null : reserves[1]
             },
             technicals: {

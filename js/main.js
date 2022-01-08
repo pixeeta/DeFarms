@@ -1,5 +1,5 @@
 const DEBUG = false;
-const DEBUG_FARM_ID = 0;
+const DEBUG_FARM_ID = 30;
 const DEBUG_POOL_ID = null;
 
 let appInitializer = null;
@@ -24,31 +24,35 @@ async function main() {
 		const tokenPriceProvider = new TokenPriceProvider();
 		prices = await tokenPriceProvider.getHarmonyPrices();
 
-		const farmInfoProvider = new FarmInfoProvider();
 		const masterChefContractList = HARMONY_MASTERCHEF_CONTRACT_LIST;
-		renderFarmInfoContainers(masterChefContractList);
+		const listOfFilteredFarms = getListOfFilteredFarms(masterChefContractList);
+		renderFarmInfoContainers(masterChefContractList, listOfFilteredFarms);
+		const farmInfoProvider = new FarmInfoProvider();
 		const farmAccordionSettings = storageProvider.getFarmAccordionSettings();
 		if (DEBUG) {		
 			const farmInfo = await farmInfoProvider.getFarmInfo(masterChefContractList[DEBUG_FARM_ID]);
 			console.log(farmInfo);
-			renderFarmInfo(farmInfo, farmAccordionSettings)
+			renderFarmInfo(farmInfo, farmAccordionSettings, true)
 		} else {
 			for (let i = 0; i < masterChefContractList.length; i++) {
 				let farmInfo = null;
-				if (masterChefContractList[i].isSupported) {
-					farmInfo = await farmInfoProvider.getFarmInfo(masterChefContractList[i]);
-				} else {
-					farmInfo = {
-						name: masterChefContractList[i].farm,
-						farmId: masterChefContractList[i].farmId,
-						masterchefAddress: masterChefContractList[i].chefContract,
-						isSupported: false,
-						pools: []
+				let isVisible = listOfFilteredFarms[masterChefContractList[i].farmId].isVisible;
+				if (isVisible){
+					if (masterChefContractList[i].isSupported) {
+						farmInfo = await farmInfoProvider.getFarmInfo(masterChefContractList[i]);
+					} else {
+						farmInfo = {
+							name: masterChefContractList[i].name,
+							farmId: masterChefContractList[i].farmId,
+							masterchefAddress: masterChefContractList[i].chefContract,
+							isSupported: false,
+							pools: []
+						}
 					}
 				}
 
 				console.log(farmInfo);
-				renderFarmInfo(farmInfo, farmAccordionSettings);
+				renderFarmInfo(farmInfo, farmAccordionSettings, isVisible);
 			}
 		}
 	} else {
@@ -58,24 +62,42 @@ async function main() {
 	enableHeaderButtons();
 }
 
-function renderFarmInfoContainers(masterChefContractList) {
-	const templateHtml = $('#farm-info-container-template').html();
-	const compiledTemplate = Handlebars.compile(templateHtml);
-	$('#content-container').append(compiledTemplate(masterChefContractList));	
-	bindFarmInfoControls($('#content-container'));
+function getListOfFilteredFarms(masterChefContractList) {
+	let list = {};
+	masterChefContractList.forEach(item => {
+		list[item.farmId] = {
+			name: item.name,
+			isVisible: item.showByDefault
+		}
+	});	
+
+	return list;
 }
 
-function renderFarmInfo(farmInfo, i, farmAccordionSettings) {
+function renderFarmInfoContainers(masterChefContractList, listOfFilteredFarms) {
+	const templateHtml = $('#farm-info-container-template').html();
+	const compiledTemplate = Handlebars.compile(templateHtml);
+	masterChefContractList.forEach(masterchefDetails => {
+		const farmInfoContainerVm = new FarmInfoViewModel(masterchefDetails, null, listOfFilteredFarms[masterchefDetails.farmId].isVisible, true);
+		$('#content-container').append(compiledTemplate(farmInfoContainerVm));	
+	})
+}
+
+function renderFarmInfo(farmInfo, farmAccordionSettings, isVisible) {
 	const templateHtml = $('#farm-info-content-template').html();
 	const compiledTemplate = Handlebars.compile(templateHtml);
-	const farmInfoViewModel = new FarmInfoViewModel(farmInfo, i, farmAccordionSettings);
+	const farmInfoViewModel = new FarmInfoViewModel(farmInfo, farmAccordionSettings);
 	if (farmInfoViewModel.hasData) {
 		farmInfoViewModels.push(farmInfoViewModel);
 		$farmContainer =  $('.farm-info[data-farm-id=' + farmInfoViewModel.farmId + ']');
 		$farmContainer.empty();
 		$farmContainer.append(compiledTemplate(farmInfoViewModel));	
 		bindFarmInfoControls($farmContainer);
-		$($farmContainer).show();
+		if (isVisible) {
+			$($farmContainer).show();
+		} else {
+			$($farmContainer).hide();
+		}
 	}
 }
 

@@ -74,7 +74,7 @@ function FarmInfoProvider() {
         });
 
         const farmInfo = {
-            name: masterchefJson.farm,
+            name: masterchefJson.name,
             farmId: masterchefJson.farmId,
             masterchefAddress: masterchefJson.chefContract,
             pools: farmPools,

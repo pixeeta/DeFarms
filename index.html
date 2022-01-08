@@ -47,17 +47,15 @@
 </body>
 
 <script id="farm-info-container-template" type="text/x-handlebars-template">
-	{{#each .}}
-    <div class="farm-info" data-farm-id="{{farmId}}" data-farm-masterchef-address="{{chefContract}}">
+    <div class="farm-info" data-farm-id="{{farmId}}" data-farm-masterchef-address="{{chefContract}}" {{#unless isVisible}}style="display:none"{{/unless}}>
 		<div class="farm-info-header">
-			<div class="farm-name">{{farm}}</div>
+			<div class="farm-name">{{name}}</div>
 			<div class="loading-spinner-container">
 				<div class="lds-ring"><div></div><div></div><div></div><div></div></div>
 				<span>Loading data...</span>
 			</div>
 		</div>
     </div>
-	{{/each}}
 </script>
 
 <script id="farm-info-content-template" type="text/x-handlebars-template">
