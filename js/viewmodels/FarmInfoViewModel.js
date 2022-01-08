@@ -1,4 +1,4 @@
-function FarmInfoViewModel(farmInfo, farmAccordionSettings, isVisible, impermanentLossSettings, containerOnly) {
+function FarmInfoViewModel(farmInfo, isVisible, isFarmCollapsed, impermanentLossSettings, containerOnly) {
     if (containerOnly) {
         this.name = farmInfo.name;
         this.farmId = farmInfo.farmId;
@@ -10,15 +10,8 @@ function FarmInfoViewModel(farmInfo, farmAccordionSettings, isVisible, impermane
             this.farmId = farmInfo.farmId;
             this.masterchefAddress = farmInfo.masterchefAddress;
             this.nameWithouthSpaces = this.name.replace(/ /g, '');
-            this.isVisible = isVisible;
-            
-            this.isCollapsed = false;
-            if (farmAccordionSettings){
-                this.accordionSettings = farmAccordionSettings[this.farmId];
-                if (this.accordionSettings) {
-                    this.isCollapsed = this.accordionSettings.isCollapsed;
-                }
-            }
+            this.isVisible = isVisible;            
+            this.isCollapsed = isFarmCollapsed;
     
             this.pools = [];
             farmInfo.pools.forEach(pool => {
@@ -27,7 +20,7 @@ function FarmInfoViewModel(farmInfo, farmAccordionSettings, isVisible, impermane
                     isBestApr = true;
                 } 
                 
-                const poolImpermanentLossSettings = impermanentLossSettings ? impermanentLossSettings[pool.poolId] : null;
+                const poolImpermanentLossSettings = impermanentLossSettings ? impermanentLossSettings[pool?.poolId] : null;
                 const newPoolInfoViewModel = new PoolInfoViewModel(pool, isBestApr, poolImpermanentLossSettings)
                 if (newPoolInfoViewModel.hasData) {
                     this.pools.push(newPoolInfoViewModel);

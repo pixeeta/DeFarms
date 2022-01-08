@@ -178,7 +178,7 @@ span.pool-pair {
     text-align: center;
     width: calc(100% - 0px);
     font-size: 22px;
-    font-weight: 500;
+    font-weight: 600;
 }
 
 .pool-body {
@@ -267,8 +267,10 @@ span.pool-pair {
 
 /* ###### POOL IMPERMANENT LOSS DETAILS ##### */
 
-.impernanent-loss-settings-button {     
+.impernanent-loss-settings-button {  
+    position: relative;   
     margin-top: 10px;
+    z-index: 10;
 }
 
 .pool-impernanent-loss-details {
@@ -370,12 +372,11 @@ span.pool-id {
 }
 
 .pool-item.pool-is-staked {
-    min-height: 352px;
+    min-height: 390px;
     flex-basis: 300px;
 }
 
 .pool-has-impermanent-loss-info {
-    min-height: 380px !important;
     flex-basis: 500px !important;
 }
 

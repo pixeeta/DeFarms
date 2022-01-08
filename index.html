@@ -170,12 +170,12 @@
 							</div>
 						</div>
 					</div>
+					<span class="pool-id">{{poolId}}</span>
+					<span class="pool-token-type">{{lpTokenType}}</span>
 					<div class="pool-footer">
-						<div {{#unless showImpermanentLossSettingsButton}}style="display:none"{{/unless}}>
-							<button class="impernanent-loss-settings-button" data-farm-id="{{../farmId}}" data-pool-id="{{poolId}}">Impermanent Loss Settings</button>
-						</div>
-						<span class="pool-id">{{poolId}}</span>
-						<span class="pool-token-type">{{lpTokenType}}</span>
+						{{#if showImpermanentLossSettingsButton}}
+						<button class="impernanent-loss-settings-button" data-farm-id="{{../farmId}}" data-pool-id="{{poolId}}">Impermanent Loss Settings</button>
+						{{/if}}
 					</div>
 					<div class="best-apr-ribbon">
 						<span>Best APR</span>

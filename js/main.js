@@ -1,4 +1,4 @@
-const DEBUG = true;
+const DEBUG = false;
 const DEBUG_FARM_ID = 37;
 const DEBUG_POOL_ID = null;
 
@@ -8,6 +8,7 @@ let storageProvider = null;
 let userWalletIsConnected = false;
 let prices = [];
 let farmInfoViewModels = [];
+let listOfFilteredFarms = [];
 
 window.addEventListener('load', async function () {
 	storageProvider = new StorageProvider();
@@ -25,20 +26,20 @@ async function main() {
 		prices = await tokenPriceProvider.getHarmonyPrices();
 
 		const masterChefContractList = HARMONY_MASTERCHEF_CONTRACT_LIST;
-		const listOfFilteredFarms = getListOfFilteredFarms(masterChefContractList);
-		renderFarmInfoContainers(masterChefContractList, listOfFilteredFarms);
+		listOfFilteredFarms = getListOfFilteredFarms(masterChefContractList);
+		renderFarmInfoContainers(masterChefContractList);
 		const farmInfoProvider = new FarmInfoProvider();
-		const farmAccordionSettings = storageProvider.getFarmAccordionSettings();
 		if (DEBUG) {		
 			const farmInfo = await farmInfoProvider.getFarmInfo(masterChefContractList[DEBUG_FARM_ID]);
 			console.log(farmInfo);
 			const impermanentLossSettings = storageProvider.getImpermanentLossSettingsForFarm(farmInfo.farmId);
-			renderFarmInfo(farmInfo, farmAccordionSettings, true, impermanentLossSettings);
+			renderFarmInfo(farmInfo, true, false, impermanentLossSettings);
 		} else {
 			for (let i = 0; i < masterChefContractList.length; i++) {
 				let farmInfo = null;
-				let isVisible = listOfFilteredFarms[masterChefContractList[i].farmId].isVisible;
-				if (isVisible){
+				const isFarmVisible = getIsFarmVisible(masterChefContractList[i].farmId);
+				const isFarmInfoCollapsed = storageProvider.getFarmAccordionSettings(masterChefContractList[i].farmId);
+				if (isFarmVisible){
 					if (masterChefContractList[i].isSupported) {
 						farmInfo = await farmInfoProvider.getFarmInfo(masterChefContractList[i]);
 					} else {
@@ -53,8 +54,8 @@ async function main() {
 				}
 
 				console.log(farmInfo);
-				const impermanentLossSettings = storageProvider.getImpermanentLossSettingsForFarm(farmInfo.farmId);
-				renderFarmInfo(farmInfo, farmAccordionSettings, isVisible, impermanentLossSettings);
+				const impermanentLossSettings = storageProvider.getImpermanentLossSettingsForFarm(farmInfo?.farmId);
+				renderFarmInfo(farmInfo, isFarmVisible, isFarmInfoCollapsed, impermanentLossSettings);
 			}
 		}
 	} else {
@@ -76,19 +77,28 @@ function getListOfFilteredFarms(masterChefContractList) {
 	return list;
 }
 
-function renderFarmInfoContainers(masterChefContractList, listOfFilteredFarms) {
+function getIsFarmVisible(farmId) {
+	return listOfFilteredFarms[farmId].isVisible;
+}
+
+function renderFarmInfoContainers(masterChefContractList) {
 	const templateHtml = $('#farm-info-container-template').html();
 	const compiledTemplate = Handlebars.compile(templateHtml);
 	masterChefContractList.forEach(masterchefDetails => {
-		const farmInfoContainerVm = new FarmInfoViewModel(masterchefDetails, null, listOfFilteredFarms[masterchefDetails.farmId].isVisible, null, true);
+		const farmInfoContainerVm = new FarmInfoViewModel(masterchefDetails, getIsFarmVisible(masterchefDetails.farmId), null, null, true);
 		$('#content-container').append(compiledTemplate(farmInfoContainerVm));	
 	})
 }
 
-function renderFarmInfo(farmInfo, farmAccordionSettings, isVisible, impermanentLossSettings) {
+function renderFarmInfo(farmInfo, isVisible, isCollapsed, impermanentLossSettings, optionalFarmInfoViewModel) {
 	const templateHtml = $('#farm-info-content-template').html();
 	const compiledTemplate = Handlebars.compile(templateHtml);
-	const farmInfoViewModel = new FarmInfoViewModel(farmInfo, farmAccordionSettings, isVisible, impermanentLossSettings, false);
+	let farmInfoViewModel;
+	if (optionalFarmInfoViewModel) {
+		farmInfoViewModel = optionalFarmInfoViewModel;
+	} else {
+		farmInfoViewModel = new FarmInfoViewModel(farmInfo, isVisible, isCollapsed, impermanentLossSettings, false);
+	}
 	if (farmInfoViewModel.hasData) {
 		farmInfoViewModels.push(farmInfoViewModel);
 		$farmContainer =  $('.farm-info[data-farm-id=' + farmInfoViewModel.farmId + ']');
@@ -122,36 +132,10 @@ function bindFarmInfoControls(element) {
 	});
 
 	$(element).find('.impernanent-loss-settings-button').on('click', (ele) => {
-		const templateHtml = $('#impermanent-loss-settings-modal-template').html();
-		const compiledTemplate = Handlebars.compile(templateHtml);
-
 		const farmId = $(ele.target).data('farm-id');
 		const poolId = $(ele.target).data('pool-id');
-		const farmInfoViewModel = farmInfoViewModels.filter(f => f.farmId === farmId)[0];
-		const poolInfoViewModel = farmInfoViewModel.pools.filter(p => p.poolId === poolId)[0];
 
-		let modalViewModel = {
-			token0Symbol: poolInfoViewModel.token0Symbol,
-			token1Symbol: poolInfoViewModel.token1Symbol,
-			preferredToken: poolInfoViewModel.impermanentLossInfo?.initialTokenSymbol,
-			preferredTokenInitialAmount: poolInfoViewModel.impermanentLossInfo?.initialTokenAmount
-		}
-
-		$('#modal-container').empty();
-		$('#modal-container').append(compiledTemplate(modalViewModel));
-		$('#modal-container').modal();	
-
-		if (modalViewModel.preferredToken) {
-			$('#preferred-token-input').val(modalViewModel.preferredToken);
-		}
-		
-		$('#modal-container').find('.btn-primary').on('click', (ele) => {
-			console.log($('#preferred-token-input').val());
-			console.log($('#preferred-token-initial-amount-input').val());
-			storageProvider.setImpermanentLossSettingsForPool(farmId, poolId, $('#preferred-token-input').val(), $('#preferred-token-initial-amount-input').val())
-			console.log('impermanent loss settings saved');
-			$('#modal-container').modal('hide');
-		});
+		showImpermanentLossModal(farmId, poolId);
 	});
 }
 
@@ -161,4 +145,40 @@ function hideFarmInfo(farmInfoId) {
 
 function showFarmInfo(farmInfoId) {
 	$('.farm-info[data-farm-id=' + farmInfoId + ']').find('.farm-pools-container').removeClass('collapsed');
+}
+
+function showImpermanentLossModal(farmId, poolId) {
+	const templateHtml = $('#impermanent-loss-settings-modal-template').html();
+	const compiledTemplate = Handlebars.compile(templateHtml);
+
+	const farmInfoViewModel = farmInfoViewModels.filter(f => f.farmId === farmId)[0];
+	const poolInfoViewModel = farmInfoViewModel.pools.filter(p => p.poolId === poolId)[0];
+
+	let modalViewModel = {
+		token0Symbol: poolInfoViewModel.token0Symbol,
+		token1Symbol: poolInfoViewModel.token1Symbol,
+		preferredToken: poolInfoViewModel.impermanentLossInfo?.initialTokenSymbol,
+		preferredTokenInitialAmount: poolInfoViewModel.impermanentLossInfo?.initialTokenAmount
+	}
+
+	$('#modal-container').empty();
+	$('#modal-container').append(compiledTemplate(modalViewModel));
+	$('#modal-container').modal();	
+
+	if (modalViewModel.preferredToken) {
+		$('#preferred-token-input').val(modalViewModel.preferredToken);
+	}
+	
+	$('#modal-container').find('.btn-primary').on('click', (ele) => {
+		let impermanentLossSettings = {
+			preferredTokenSymbol: $('#preferred-token-input').val(),
+			prefferedTokenInitialAmount: $('#preferred-token-initial-amount-input').val()
+		};
+
+		storageProvider.setImpermanentLossSettingsForPool(farmId, poolId, impermanentLossSettings.preferredTokenSymbol, impermanentLossSettings.prefferedTokenInitialAmount);
+		console.log('impermanent loss settings saved');
+		poolInfoViewModel.updateImpermanentLossInfo(impermanentLossSettings);
+		renderFarmInfo(null, getIsFarmVisible(farmInfoViewModel.farmId), false , impermanentLossSettings, farmInfoViewModel);
+		$('#modal-container').modal('hide');
+	});
 }

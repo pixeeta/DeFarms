@@ -28,8 +28,8 @@ function StorageProvider() {
     }
 
 
-    self.getFarmAccordionSettings = function() {
-        return getFarmAccordionSettings();
+    self.getFarmAccordionSettings = function(farmId) {
+        return getFarmAccordionSettings(farmId);
     }
 
     self.setAccordionSettingsForFarm = function(farmId, isCollapsed) {
@@ -105,12 +105,22 @@ function StorageProvider() {
     }
 
 
-    function getFarmAccordionSettings() {
+    function getFarmAccordionSettings(farmId) {
+        let isCollapsed = null;
+        let settingsList = JSON.parse(window.localStorage.getItem('farmAccordionSettings'));
+        if (settingsList) {
+            isCollapsed = settingsList[farmId]?.isCollapsed;
+        }
+
+        return isCollapsed;
+    }
+
+    function getAllFarmAccordionSettings() {
         return JSON.parse(window.localStorage.getItem('farmAccordionSettings'));
     }
 
     function setAccordionSettingsForFarm(farmId, isCollapsed) {
-        let farmAccordionSettings = getFarmAccordionSettings();
+        let farmAccordionSettings = getAllFarmAccordionSettings();
         if (!farmAccordionSettings) {
             farmAccordionSettings = {};
         }
