@@ -52,6 +52,16 @@ function StorageProvider() {
         return setTokenType(address, type)
     }
 
+    self.getImpermanentLossSettingsForFarm = (farmId) => {
+        return getImpermanentLossSettingsForFarm(farmId)
+    }
+    self.getImpermanentLossSettingsForPool = (farmId, poolId) => {
+        return getImpermanentLossSettingsForPool(farmId, poolId)
+    }
+    self.setImpermanentLossSettingsForPool = (farmId, poolId, tokenSymbol, initialAmount) => {
+        return setImpermanentLossSettingsForPool(farmId, poolId, tokenSymbol, initialAmount)
+    }
+
 
     function init(){
         return self;
@@ -133,5 +143,43 @@ function StorageProvider() {
         };
 
         window.localStorage.setItem('lpTokens', JSON.stringify(tokenTypes));
+    }
+
+    function getImpermanentLossSettingsForFarm(farmId) {
+        let farmIlSettings = null;
+        let ilSettingsList = JSON.parse(window.localStorage.getItem('impermanentLossSettings'));
+        if (ilSettingsList) {
+            farmIlSettings = ilSettingsList[farmId];
+        }
+
+        return farmIlSettings;
+    }
+
+    function getImpermanentLossSettingsForPool(farmId, poolId) {
+        let poolIlSettings = null;
+        const farmIlSettings = getImpermanentLossSettingsForFarm(farmId);
+        if (farmIlSettings) {
+            poolIlSettings = farmIlSettings[poolId];
+        }
+
+        return poolIlSettings;
+    }
+
+    function setImpermanentLossSettingsForPool(farmId, poolId, tokenSymbol, initialAmount) {
+        let ilSettingsList = JSON.parse(window.localStorage.getItem('impermanentLossSettings'));
+        if (!ilSettingsList) {
+            ilSettingsList = {};            
+            ilSettingsList[farmId] = {};
+        }
+
+        if (!ilSettingsList[farmId]) {  
+            ilSettingsList[farmId] = {};
+        }
+        ilSettingsList[farmId][poolId] = {
+            preferredTokenSymbol: tokenSymbol,
+            prefferedTokenInitialAmount: initialAmount
+        };
+
+        window.localStorage.setItem('impermanentLossSettings', JSON.stringify(ilSettingsList));
     }
 }

@@ -47,7 +47,7 @@
     text-align: left;
 }
 
- .farm-staked-pools-number label, .farm-incentivised-pools-number label, .farm-discovered-pools-number label {
+ .farm-staked-pools-number .custom-label, .farm-incentivised-pools-number .custom-label, .farm-discovered-pools-number .custom-label {
     font-size: 13px;
     color: #505050;
 }
@@ -58,7 +58,7 @@
 .farm-info-header .farm-best-apr {
     width: 180px;
 }
-.farm-best-apr label {
+.farm-best-apr .custom-label {
     font-size: 16px;
 } 
 .farm-best-apr span {
@@ -85,16 +85,16 @@
     /* background-color: rgb(201, 201, 201); */
 }
 
-.fold-farm-info-button .caret-icon .down {
+.fold-farm-info-button .custom-caret-icon .down {
     position: absolute;
     right: 12px;
-    top: 10px;
+    top: 8px;
 }
 
-.fold-farm-info-button .caret-icon .up {
+.fold-farm-info-button .custom-caret-icon .up {
     position: absolute;
     right: 12px;
-    top: 16px;
+    top: 14px;
 }
 
 .fold-farm-info-button:hover {
@@ -157,9 +157,9 @@ ul.farm-pools-list {
     overflow: hidden;
 }
 
-.farm-pools-list li:last-child {
+/* .farm-pools-list li:last-child {
     flex-grow: 0;
-}
+} */
 
 .pool-item.pool-is-not-incentivised {
     display: none;
@@ -188,6 +188,8 @@ span.pool-pair {
     font-weight: 400;
 }
 
+/* ###### POOL DETAILS ##### */
+
 .pool-body, .pool-details, .pool-staking-details {
     z-index: 10;
 }
@@ -196,20 +198,11 @@ span.pool-pair {
     flex: 1;    
 }
 
-.pool-staking-details {
-    flex: 1;
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    flex-wrap: nowrap;
-    justify-content: space-between;
-}
-
 .pool-tvl {
     margin-top: 14px;
 }
 
-.pool-tvl label, .pool-reward-allocation label, .pool-apr label {
+.pool-tvl .custom-label, .pool-reward-allocation .custom-label, .pool-apr .custom-label {
     display: block;
     font-size: 14px;
 }
@@ -230,6 +223,16 @@ span.pool-pair {
     font-size: 18px;
 }
 
+/* ###### POOL STAKING DETAILS ##### */
+
+.pool-staking-details {
+    flex: 1;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+}
 
 .pool-staking-details-text {
     /* margin-top: 12px; */
@@ -241,7 +244,7 @@ span.pool-pair {
     margin-top: 0px;
 }
 
-.pool-staking-details-text label {
+.pool-staking-details-text .custom-label {
     font-size: 14px;
 }
 
@@ -261,6 +264,44 @@ span.pool-pair {
     height: 22px;
     margin-top: 8px;
 }
+
+/* ###### POOL IMPERMANENT LOSS DETAILS ##### */
+
+.impernanent-loss-settings-button {     
+    margin-top: 10px;
+}
+
+.pool-impernanent-loss-details {
+    display: none;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+}
+
+.pool-impernanent-loss-details-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.pool-impernanent-loss-details-text .custom-label {
+    font-size: 14px;
+}
+
+.pool-impernanent-loss-details-text .small-text {
+    font-size: 12px;
+}
+
+.pool-impernanent-loss-details-text .big-text {
+    font-size: 16px;
+}
+
+.pool-impernanent-loss-details-text .bigger-text {
+    font-size: 18px;
+}
+
+/* ##### POOL MISC ###### */
 
 span.pool-id { 
     /* background-color: rgb(207, 206, 206); */
@@ -310,13 +351,10 @@ span.pool-id {
     z-index: 1;
 }
 
-.pool-item.pool-is-best-apr .best-apr-ribbon {
-    display: block !important;
-}
+/* ####### POOL STATES ##### */
 
-.pool-item.pool-is-staked {
-    height: 352px;
-    flex-basis: 300px;
+.pool-item.pool-has-impermanent-loss-info .pool-impernanent-loss-details {
+    display: flex;
 }
 
 .pool-item.pool-is-staked .pool-staked-ribbon {
@@ -325,6 +363,20 @@ span.pool-id {
 
 .pool-item.pool-is-staked .pool-staking-details {
     display: flex;
+}
+
+.pool-item.pool-is-best-apr .best-apr-ribbon {
+    display: block !important;
+}
+
+.pool-item.pool-is-staked {
+    min-height: 352px;
+    flex-basis: 300px;
+}
+
+.pool-has-impermanent-loss-info {
+    min-height: 380px !important;
+    flex-basis: 500px !important;
 }
 
 /* .pool-item.pool-is-staked { 
@@ -341,9 +393,9 @@ body.dark-mode .farm-info-header, body.dark-mode .farm-info-header .farm-name {
     color: #ccc;
 }
 
-body.dark-mode .farm-staked-pools-number label, 
-body.dark-mode .farm-incentivised-pools-number label, 
-body.dark-mode .farm-discovered-pools-number label {
+body.dark-mode .farm-staked-pools-number .custom-label, 
+body.dark-mode .farm-incentivised-pools-number .custom-label, 
+body.dark-mode .farm-discovered-pools-number .custom-label {
     color: #b6b6b6;
 }
 

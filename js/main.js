@@ -1,5 +1,5 @@
-const DEBUG = false;
-const DEBUG_FARM_ID = 30;
+const DEBUG = true;
+const DEBUG_FARM_ID = 37;
 const DEBUG_POOL_ID = null;
 
 let appInitializer = null;
@@ -32,7 +32,8 @@ async function main() {
 		if (DEBUG) {		
 			const farmInfo = await farmInfoProvider.getFarmInfo(masterChefContractList[DEBUG_FARM_ID]);
 			console.log(farmInfo);
-			renderFarmInfo(farmInfo, farmAccordionSettings, true)
+			const impermanentLossSettings = storageProvider.getImpermanentLossSettingsForFarm(farmInfo.farmId);
+			renderFarmInfo(farmInfo, farmAccordionSettings, true, impermanentLossSettings);
 		} else {
 			for (let i = 0; i < masterChefContractList.length; i++) {
 				let farmInfo = null;
@@ -52,7 +53,8 @@ async function main() {
 				}
 
 				console.log(farmInfo);
-				renderFarmInfo(farmInfo, farmAccordionSettings, isVisible);
+				const impermanentLossSettings = storageProvider.getImpermanentLossSettingsForFarm(farmInfo.farmId);
+				renderFarmInfo(farmInfo, farmAccordionSettings, isVisible, impermanentLossSettings);
 			}
 		}
 	} else {
@@ -78,15 +80,15 @@ function renderFarmInfoContainers(masterChefContractList, listOfFilteredFarms) {
 	const templateHtml = $('#farm-info-container-template').html();
 	const compiledTemplate = Handlebars.compile(templateHtml);
 	masterChefContractList.forEach(masterchefDetails => {
-		const farmInfoContainerVm = new FarmInfoViewModel(masterchefDetails, null, listOfFilteredFarms[masterchefDetails.farmId].isVisible, true);
+		const farmInfoContainerVm = new FarmInfoViewModel(masterchefDetails, null, listOfFilteredFarms[masterchefDetails.farmId].isVisible, null, true);
 		$('#content-container').append(compiledTemplate(farmInfoContainerVm));	
 	})
 }
 
-function renderFarmInfo(farmInfo, farmAccordionSettings, isVisible) {
+function renderFarmInfo(farmInfo, farmAccordionSettings, isVisible, impermanentLossSettings) {
 	const templateHtml = $('#farm-info-content-template').html();
 	const compiledTemplate = Handlebars.compile(templateHtml);
-	const farmInfoViewModel = new FarmInfoViewModel(farmInfo, farmAccordionSettings);
+	const farmInfoViewModel = new FarmInfoViewModel(farmInfo, farmAccordionSettings, isVisible, impermanentLossSettings, false);
 	if (farmInfoViewModel.hasData) {
 		farmInfoViewModels.push(farmInfoViewModel);
 		$farmContainer =  $('.farm-info[data-farm-id=' + farmInfoViewModel.farmId + ']');
@@ -105,7 +107,7 @@ function bindFarmInfoControls(element) {
 	$(element).find('.fold-farm-info-button').on('click', (ele) => {
 		const target = ele.target;
 		const farmId = $(target).data('farm-id');
-		const caret = $(target).find('.caret');
+		const caret = $(target).find('.custom-caret');
 		if ($(caret).hasClass('up')) {
 			$(caret).removeClass('up');
 			$(caret).addClass('down');
@@ -117,6 +119,39 @@ function bindFarmInfoControls(element) {
 			showFarmInfo(farmId);
 			storageProvider.setAccordionSettingsForFarm(farmId, false);
 		}
+	});
+
+	$(element).find('.impernanent-loss-settings-button').on('click', (ele) => {
+		const templateHtml = $('#impermanent-loss-settings-modal-template').html();
+		const compiledTemplate = Handlebars.compile(templateHtml);
+
+		const farmId = $(ele.target).data('farm-id');
+		const poolId = $(ele.target).data('pool-id');
+		const farmInfoViewModel = farmInfoViewModels.filter(f => f.farmId === farmId)[0];
+		const poolInfoViewModel = farmInfoViewModel.pools.filter(p => p.poolId === poolId)[0];
+
+		let modalViewModel = {
+			token0Symbol: poolInfoViewModel.token0Symbol,
+			token1Symbol: poolInfoViewModel.token1Symbol,
+			preferredToken: poolInfoViewModel.impermanentLossInfo?.initialTokenSymbol,
+			preferredTokenInitialAmount: poolInfoViewModel.impermanentLossInfo?.initialTokenAmount
+		}
+
+		$('#modal-container').empty();
+		$('#modal-container').append(compiledTemplate(modalViewModel));
+		$('#modal-container').modal();	
+
+		if (modalViewModel.preferredToken) {
+			$('#preferred-token-input').val(modalViewModel.preferredToken);
+		}
+		
+		$('#modal-container').find('.btn-primary').on('click', (ele) => {
+			console.log($('#preferred-token-input').val());
+			console.log($('#preferred-token-initial-amount-input').val());
+			storageProvider.setImpermanentLossSettingsForPool(farmId, poolId, $('#preferred-token-input').val(), $('#preferred-token-initial-amount-input').val())
+			console.log('impermanent loss settings saved');
+			$('#modal-container').modal('hide');
+		});
 	});
 }
 

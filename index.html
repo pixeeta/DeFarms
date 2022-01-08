@@ -4,8 +4,14 @@
 	<link rel="stylesheet" href="./css/main.css">
 	<link rel="stylesheet" href="./css/header.css">
 	<link rel="stylesheet" href="./css/farm-info.css">
+		
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+	
 	<script	src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
+	
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>	
 	<script src="./node_modules/web3/dist/web3.min.js"></script>
 	<script src="./js/static/networks.js"></script>
 	<script src="./js/static/abis.js"></script>
@@ -44,6 +50,7 @@
 		<span>Please switch to Harmony Mainnet Shard 0 network</span>
 	</div>
 	<div id="content-container"></div>
+	<div id="modal-container" class="modal fade" tabindex="-1"></div>
 </body>
 
 <script id="farm-info-container-template" type="text/x-handlebars-template">
@@ -63,25 +70,25 @@
 		<div class="farm-name">{{name}}</div>
 		<div class="farm-info-right-side-container">
 			<div class="farm-discovered-pools-number">
-				<label>Discovered pools:</label>
+				<span class="custom-label">Discovered pools:</span>
 				<span>{{totalDiscoveredPools}}/{{totalMasterchefPools}}</span>
 			</div>
 			<div class="farm-incentivised-pools-number">
-				<label>Incentivized pools:</label>
+				<span class="custom-label">Incentivized pools:</span>
 				<span>{{incentivisedPools}}</span>
 			</div>
 			<div class="farm-staked-pools-number">
-				<label>Staked pools:</label>
+				<span class="custom-label">Staked pools:</span>
 				<span>{{numberOfStakedPools}}</span>
 			</div>
 			<div class="farm-best-apr">
-				<label>Best APR:</label>
+				<span class="custom-label">Best APR:</span>
 				<span>{{formattedFarmBestApr}}</span>
 			</div>
 			<div class="button-container">
 				<div class="fold-farm-info-button" data-farm-id="{{farmId}}">
-					<div class="caret-icon">
-						<div class="caret {{#if isCollapsed}}down{{else}}up{{/if}}"></div>
+					<div class="custom-caret-icon">
+						<div class="custom-caret {{#if isCollapsed}}down{{else}}up{{/if}}"></div>
 					</div>
 				</div>
 			</div>
@@ -91,61 +98,82 @@
 		<ul class="farm-pools-list">
 			{{#each pools}}
 				{{#if address}}
-				<li class="pool-item {{isBestAprClass}} {{isStakedClass}} {{isIncentivisedClass}}" data-farm-masterchef-address="{{../masterchefAddress}}" data-pool-address="{{address}}" data-pool-id="{{poolId}}">
+				<li class="pool-item {{isBestAprClass}} {{isStakedClass}} {{isIncentivisedClass}} {{hasImpermanentLossInfoClass}}" data-farm-masterchef-address="{{../masterchefAddress}}" data-pool-address="{{address}}" data-pool-id="{{poolId}}">
 					<div class="pool-header">
 						<span class="pool-pair">{{token0Symbol}} - {{token1Symbol}}</span>
 					</div>
 					<div class="pool-body">	
 						<div class="pool-details">
 							<div class="pool-token0-price">
-								<label>{{token0Symbol}}:</label>
+								<span class="custom-label">{{token0Symbol}}:</span>
 								<span>{{token0FormattedPrice}}</span>
 							</div>					
 							<div class="pool-token1-price">
-								<label>{{token1Symbol}}:</label>
+								<span class="custom-label">{{token1Symbol}}:</span>
 								<span>{{token1FormattedPrice}}</span>
 							</div>					
 							<div class="pool-tvl">
-								<label>Pool TVL:</label>
+								<span class="custom-label">Pool TVL:</span>
 								<span>{{formattedTvl}}</span>
 							</div>
 							<div class="pool-tvl">
-								<label>Staked TVL:</label>
+								<span class="custom-label">Staked TVL:</span>
 								<span>{{formattedStakedTvl}}</span>
 							</div>
 							<div class="pool-reward-allocation">
-								<label>Reward allocation:</label>
+								<span class="custom-label">Reward allocation:</span>
 								<span>{{formattedPoolRewardAllocation}}</span>
 							</div>
 							<div class="pool-apr">
-								<label>APR:</label>
+								<span class="custom-label">APR:</span>
 								<span>{{formattedApr}}</span>
 							</div>
 						</div>	
 						<div class="pool-staking-details">				
 							<div class="pool-staking-details-text">
-								<label>You are staking:</label>
+								<span class="custom-label">You are staking:</span>
 								<div>
 									<span class="big-text">{{formattedStakedLpTokenAmount}}</span><span class="small-text"> LP tokens</span>
 								</div>
 							</div>
 							<div class="pool-staking-details-text">
-								<label>Your stake is:</label>
+								<span class="custom-label">Your stake is:</span>
 								<span class="big-text">{{formattedPercentOfPool}}</span><span class="small-text"> of the total pool</span>
 							</div>
 							<div class="pool-staking-details-text">
-								<label>Your LP is:</label>
+								<span class="custom-label">Your LP is:</span>
 								<span class="big-text">{{formattedStakedToken0Amount}} {{token0Symbol}}</span>
 								<span class="small-text">and</span>
 								<span class="big-text">{{formattedStakedToken1Amount}} {{token1Symbol}}</span>
 							</div>
 							<div class="pool-staking-details-text">
-								<label>Your stake value is:</label>
+								<span class="custom-label">Your stake value is:</span>
 								<span class="bigger-text">{{formattedStakedValue}}</span>
+							</div>
+						</div>
+						<div class="pool-impernanent-loss-details">
+							<div class="pool-impernanent-loss-details-text">
+								<span class="custom-label">Initial number of staked tokens:</span>
+								<span class="big-text">{{impermanentLossInfo.formattedIlInitialTokenAmount}} {{impermanentLossInfo.initialTokenSymbol}}</span>
+							</div>
+							<div class="pool-impernanent-loss-details-text">
+								<span class="custom-label">Change in number of staked tokens:</span>
+								<span class="big-text">{{impermanentLossInfo.formattedChangeInNumberOfTokens}} {{impermanentLossInfo.initialTokenSymbol}}</span>
+							</div>
+							<div class="pool-impernanent-loss-details-text">
+								<span class="custom-label">Current value of 2x {{impermanentLossInfo.initialTokenSymbol}} tokens if held:</span>
+								<span class="big-text">{{impermanentLossInfo.formattedCurrentValueOfTokensIfHeld}}</span>
+							</div>
+							<div class="pool-impernanent-loss-details-text">
+								<span class="custom-label">Impermanent loss / profit:</span>
+								<span class="bigger-text">{{impermanentLossInfo.impermanentNetValueChangeSign}}{{impermanentLossInfo.formattedImpermanentNetValueChange}}</span>
 							</div>
 						</div>
 					</div>
 					<div class="pool-footer">
+						<div {{#unless showImpermanentLossSettingsButton}}style="display:none"{{/unless}}>
+							<button class="impernanent-loss-settings-button" data-farm-id="{{../farmId}}" data-pool-id="{{poolId}}">Impermanent Loss Settings</button>
+						</div>
 						<span class="pool-id">{{poolId}}</span>
 						<span class="pool-token-type">{{lpTokenType}}</span>
 					</div>
@@ -167,7 +195,46 @@
 				</li>
 				{{/if}}
 			{{/each}}
-		</ul>
-	</div>
-</script>
+			</ul>
+		</div>
+	</script>
+
+	<script id="impermanent-loss-settings-modal-template" type="text/x-handlebars-template">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Impermanent loss settings</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>
+						This tool assumes that whent entering a liquidity pool, you split the holdings of your preferred token and paired it with another token.
+					</p>
+					
+					<div class="modal-input-section">
+						<div class="form-group modal-input-group">
+							<label for="preferred-token-input">Your preferred token:</label>							
+							<select class="form-control" id="preferred-token-input">
+								<option>{{token0Symbol}}</option>
+								<option>{{token1Symbol}}</option>
+							</select>
+						  </div>
+					</div>
+						
+					<p style="margin-top: 15px">
+						Initial amount of tokens means the number of particular token that was first entered into the pool. It would have been half of the value of the LP. 
+						If you compunded your rewards since then, you can add those to the initial number.
+					</p>
+					<div class="form-group modal-input-group">
+						<label for="preferred-token-initial-amount-input">Initial amount of your preferred token in the pool:</label>
+						<input type="text" class="form-control" id="preferred-token-initial-amount-input" value="{{preferredTokenInitialAmount}}">
+					</div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+	</script>
 <html>

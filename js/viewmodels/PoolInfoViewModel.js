@@ -1,16 +1,19 @@
-function PoolInfoViewModel(poolInfo, isBestApr) {
+function PoolInfoViewModel(poolInfo, isBestApr, poolImpermanentLossSettings) {
     if (poolInfo) {
         this.address = poolInfo.address;
         this.poolId = poolInfo.poolId;
         this.isSingleTokenPool = poolInfo.isSingleTokenPool;
         this.lpTokenType = poolInfo.name;
+        this.isStaked = poolInfo.userStaking.isStaked;
+        this.hasImpermanentLossInfo = false;
+        this.showImpermanentLossSettingsButton = false;
 
         this.token0Symbol = poolInfo.token0.symbol;
         this.token0FormattedPrice = '$' + formatDecimalNumber(poolInfo.token0.price, 4);
         if (!this.isSingleTokenPool) {
             this.token1Symbol = poolInfo.token1.symbol;
             this.token1FormattedPrice = '$' + formatDecimalNumber(poolInfo.token1.price, 4);
-        }
+        }    
 
         this.formattedTvl = formatCurrency(poolInfo.tvl);
         this.formattedStakedTvl = formatCurrency(poolInfo.stakedTvl);
@@ -20,7 +23,6 @@ function PoolInfoViewModel(poolInfo, isBestApr) {
         this.poolRewardAllocation = poolInfo.technicals.poolRewardAllocation;
         this.formattedPoolRewardAllocation = !isNaN(this.poolRewardAllocation) ? formatDecimalNumber(this.poolRewardAllocation * 100) + '%' : '--%';
 
-        this.isStaked = poolInfo.userStaking.isStaked;
         if (this.isStaked) {
             this.stakedLpTokenAmount = poolInfo.userStaking.stakedLpTokenAmount;
             this.percentOfPool = poolInfo.userStaking.percentOfPool;
@@ -35,12 +37,35 @@ function PoolInfoViewModel(poolInfo, isBestApr) {
             if (!this.isSingleTokenPool) {
                 this.stakedToken1Amount = poolInfo.userStaking.stakedToken1Amount;
                 this.formattedStakedToken1Amount = this.stakedToken1Amount < 1 ?  formatDecimalNumber(this.stakedToken1Amount, 4) : formatDecimalNumber(this.stakedToken1Amount, 2);
-            }
+                
+                this.showImpermanentLossSettingsButton = true;
+
+                if (poolImpermanentLossSettings) {
+                    this.hasImpermanentLossInfo = true;
+                    let initialTokenSymbol = poolImpermanentLossSettings.preferredTokenSymbol;
+                    let initialTokenAmount = Number(poolImpermanentLossSettings.prefferedTokenInitialAmount);
+                    let initialTokenPrice = initialTokenSymbol === this.token0Symbol ? poolInfo.token0.price : poolInfo.token1.price;
+                    let stakedTokenAmount = initialTokenSymbol === this.token0Symbol ? this.stakedToken0Amount : this.stakedToken1Amount;
+                    let changeInNumberOfTokens = stakedTokenAmount - initialTokenAmount;
+                    let currentValueOfTokensIfHeld = initialTokenAmount * 2 * initialTokenPrice;
+                    let impermanentNetValueChange = this.stakedValue - currentValueOfTokensIfHeld;
+                    this.impermanentLossInfo = {
+                        initialTokenSymbol: initialTokenSymbol,
+                        initialTokenAmount: initialTokenAmount,
+                        formattedIlInitialTokenAmount: initialTokenAmount < 1 ?  formatDecimalNumber(initialTokenAmount, 4) : formatDecimalNumber(initialTokenAmount, 2),
+                        formattedChangeInNumberOfTokens: !isNaN(changeInNumberOfTokens) ? formatDecimalNumber(changeInNumberOfTokens, 2) : '--',
+                        formattedCurrentValueOfTokensIfHeld: !isNaN(currentValueOfTokensIfHeld) ? '$' + formatDecimalNumber(currentValueOfTokensIfHeld, 2) : '$--',
+                        formattedImpermanentNetValueChange: !isNaN(impermanentNetValueChange) ? '$' + formatDecimalNumber(Math.abs(impermanentNetValueChange), 2) : '$--',
+                        impermanentNetValueChangeSign: !isNaN(impermanentNetValueChange) ? impermanentNetValueChange > 0 ? '+' : '-' : ''
+                    };
+                }
+            } 
         }
         
         this.isBestAprClass = isBestApr ? 'pool-is-best-apr' : '';
         this.isStakedClass = this.isStaked ? 'pool-is-staked' : '';
         this.isIncentivisedClass = poolInfo.technicals.isIncentivised ? '' : 'pool-is-not-incentivised';
+        this.hasImpermanentLossInfoClass = this.hasImpermanentLossInfo ? 'pool-has-impermanent-loss-info' : '';
         
         this.hasData = true;
     } else {

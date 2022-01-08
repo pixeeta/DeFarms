@@ -1,4 +1,4 @@
-function FarmInfoViewModel(farmInfo, farmAccordionSettings, isVisible, containerOnly) {
+function FarmInfoViewModel(farmInfo, farmAccordionSettings, isVisible, impermanentLossSettings, containerOnly) {
     if (containerOnly) {
         this.name = farmInfo.name;
         this.farmId = farmInfo.farmId;
@@ -26,8 +26,9 @@ function FarmInfoViewModel(farmInfo, farmAccordionSettings, isVisible, container
                 if (pool?.address === farmInfo.bestAprPool?.address) {
                     isBestApr = true;
                 } 
-    
-                const newPoolInfoViewModel = new PoolInfoViewModel(pool, isBestApr)
+                
+                const poolImpermanentLossSettings = impermanentLossSettings ? impermanentLossSettings[pool.poolId] : null;
+                const newPoolInfoViewModel = new PoolInfoViewModel(pool, isBestApr, poolImpermanentLossSettings)
                 if (newPoolInfoViewModel.hasData) {
                     this.pools.push(newPoolInfoViewModel);
                 }
