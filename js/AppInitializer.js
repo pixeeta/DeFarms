@@ -9,6 +9,10 @@ function AppInitializer() {
         return initializeHeaderControls();
     }
 
+    self.initializeFarmFilterDropdown = (listItems) => {
+        return initializeFarmFilterDropdown(listItems);
+    }
+
     async function initializeBlockchainConnection() {
         // const networkApiUrl = 'https://rpc.mtv.ac';
         const networkApiUrl = 'https://api.s0.t.hmny.io';
@@ -132,5 +136,44 @@ function AppInitializer() {
                 window.location.reload();
             }
         });
+
+        $("#filter-farms-dropdown-list.checkbox-menu").on("change", "input[type='checkbox']", function(ele) {
+            $(this).closest("li").toggleClass("active", this.checked);
+            const farmId = $(ele.target).data('farm-id')
+            const isVisible = this.checked;
+            storageProvider.setVisibilitySettingsForFarm(farmId, isVisible);
+
+            if(isVisible) {
+                $('.farm-info[data-farm-id=' + farmId + ']').show();
+                let $loadingSpinner = $('.farm-info[data-farm-id=' + farmId + ']').find('.loading-spinner-container')
+                if ($loadingSpinner.length > 0) {
+                    $loadingSpinner.hide();
+                    $('.farm-info[data-farm-id=' + farmId + ']').find('.refresh-page-message').show();
+                }
+            } else {
+                $('.farm-info[data-farm-id=' + farmId + ']').hide();
+            }
+        });
+        
+        $(document).on('click', '.allow-focus', function (e) {
+            e.stopPropagation();
+        });
+    }
+
+    function initializeFarmFilterDropdown(listItems) {
+        const templateHtml = $('#dropdown-items-template').html();
+        const compiledTemplate = Handlebars.compile(templateHtml);
+        
+        let dropdownViewModels = [];
+        for (const farmId in listItems) {
+            dropdownViewModels.push({
+               farmId: farmId,
+               isVisible: listItems[farmId].isVisible,
+               name: listItems[farmId].name
+            });
+        }
+    
+        $('#filter-farms-dropdown-list').empty();
+        $('#filter-farms-dropdown-list').append(compiledTemplate(dropdownViewModels));
     }
 }

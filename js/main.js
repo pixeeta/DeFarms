@@ -1,4 +1,4 @@
-const DEBUG = false;
+const DEBUG = true;
 const DEBUG_FARM_ID = 37;
 const DEBUG_POOL_ID = null;
 
@@ -27,6 +27,7 @@ async function main() {
 
 		const masterChefContractList = HARMONY_MASTERCHEF_CONTRACT_LIST;
 		listOfFilteredFarms = getListOfFilteredFarms(masterChefContractList);
+		appInitializer.initializeFarmFilterDropdown(listOfFilteredFarms);
 		renderFarmInfoContainers(masterChefContractList);
 		const farmInfoProvider = new FarmInfoProvider();
 		if (DEBUG) {		
@@ -38,7 +39,7 @@ async function main() {
 			for (let i = 0; i < masterChefContractList.length; i++) {
 				let farmInfo = null;
 				const isFarmVisible = getIsFarmVisible(masterChefContractList[i].farmId);
-				const isFarmInfoCollapsed = storageProvider.getFarmAccordionSettings(masterChefContractList[i].farmId);
+				const isFarmInfoCollapsed = storageProvider.getFarmCollapseSettings(masterChefContractList[i].farmId);
 				if (isFarmVisible){
 					if (masterChefContractList[i].isSupported) {
 						farmInfo = await farmInfoProvider.getFarmInfo(masterChefContractList[i]);
@@ -66,15 +67,13 @@ async function main() {
 }
 
 function getListOfFilteredFarms(masterChefContractList) {
-	let list = {};
-	masterChefContractList.forEach(item => {
-		list[item.farmId] = {
-			name: item.name,
-			isVisible: item.showByDefault
-		}
-	});	
+	let storedList = storageProvider.getAllFarmVisibilitySettings();
+	if (!storedList) {
+		let newList = storageProvider.initializeFarmVisibilitySettings(masterChefContractList);
+		storedList = newList;
+	}	
 
-	return list;
+	return storedList;
 }
 
 function getIsFarmVisible(farmId) {
@@ -122,12 +121,12 @@ function bindFarmInfoControls(element) {
 			$(caret).removeClass('up');
 			$(caret).addClass('down');
 			hideFarmInfo(farmId);
-			storageProvider.setAccordionSettingsForFarm(farmId, true);
+			storageProvider.setCollapseSettingsForFarm(farmId, true);
 		} else {
 			$(caret).removeClass('down');
 			$(caret).addClass('up');			
 			showFarmInfo(farmId);
-			storageProvider.setAccordionSettingsForFarm(farmId, false);
+			storageProvider.setCollapseSettingsForFarm(farmId, false);
 		}
 	});
 

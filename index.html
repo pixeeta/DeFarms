@@ -3,19 +3,14 @@
 <head>
 	<link rel="stylesheet" href="./css/main.css">
 	<link rel="stylesheet" href="./css/header.css">
-	<link rel="stylesheet" href="./css/farm-info.css">
-		
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-	
-	<script	src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-	
+	<link rel="stylesheet" href="./css/farm-info.css">		
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">	
+	<script	src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>	
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>	
 	<script src="./node_modules/web3/dist/web3.min.js"></script>
 	<script src="./js/static/networks.js"></script>
 	<script src="./js/static/abis.js"></script>
-	<!-- <script src="./js/ethers_helper.js"></script> -->
 	<script src="./js/static/harmony_tokens.js"></script>
 	<script src="./js/static/harmony_masterchefs.js"></script>
 	<script src="./js/static/mtv_masterchefs.js"></script>
@@ -38,6 +33,15 @@
 			<h1>Harmony Yield Farm Aggregator</h1>
 		</div>
 		<div id="header-controls">
+			<div class="dropdown">
+				<button class="header-button dropdown-toggle" type="button" 
+						id="filter-farms-dropdown" data-toggle="dropdown" 
+						aria-haspopup="true" aria-expanded="true">
+					Filter farms
+				  <span class="caret"></span>
+				</button>
+				<ul id="filter-farms-dropdown-list" class="dropdown-menu checkbox-menu allow-focus" aria-labelledby="filter-farms-dropdown"></ul>
+			</div>
 			<button id="sort-farms-by-apr-button" class="header-button disabled" disabled>Sort farms by APR</button>
 			<button id="sort-pools-by-apr-button" class="header-button disabled" disabled>Sort pools by APR</button>
 			<button id="show-staked-only-button" class="header-button">Show staked only</button>
@@ -53,10 +57,23 @@
 	<div id="modal-container" class="modal fade" tabindex="-1"></div>
 </body>
 
+<script id="dropdown-items-template" type="text/x-handlebars-template"> 
+	{{#each .}}
+	<li {{#if isVisible}}class="active"{{/if}}>
+		<label>
+			<input type="checkbox" {{#if isVisible}}checked{{/if}} data-farm-id="{{farmId}}"> {{name}}
+		</label>
+	</li>
+	{{/each}}
+</script>
+
 <script id="farm-info-container-template" type="text/x-handlebars-template">
     <div class="farm-info" data-farm-id="{{farmId}}" data-farm-masterchef-address="{{chefContract}}" {{#unless isVisible}}style="display:none"{{/unless}}>
 		<div class="farm-info-header">
 			<div class="farm-name">{{name}}</div>
+			<div class="refresh-page-message" style="display: none;">
+				<span>Please refresh the page to see this farm's data...</span>
+			</div>
 			<div class="loading-spinner-container">
 				<div class="lds-ring"><div></div><div></div><div></div><div></div></div>
 				<span>Loading data...</span>

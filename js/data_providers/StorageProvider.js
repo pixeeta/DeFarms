@@ -28,14 +28,25 @@ function StorageProvider() {
     }
 
 
-    self.getFarmAccordionSettings = function(farmId) {
-        return getFarmAccordionSettings(farmId);
+    self.getFarmCollapseSettings = function(farmId) {
+        return getFarmCollapseSettings(farmId);
+    }
+    self.setCollapseSettingsForFarm = function(farmId, isCollapsed) {
+        return setCollapseSettingsForFarm(farmId, isCollapsed);
     }
 
-    self.setAccordionSettingsForFarm = function(farmId, isCollapsed) {
-        return setAccordionSettingsForFarm(farmId, isCollapsed);
+    self.getAllFarmVisibilitySettings = function() {
+        return getAllFarmVisibilitySettings();
     }
-
+    self.initializeFarmVisibilitySettings = function(masterfchefListJson) {
+        return initializeFarmVisibilitySettings(masterfchefListJson);
+    }
+    self.getVisibilitySettingsForFarm = function(farmId) {
+        return getVisibilitySettingsForFarm(farmId);
+    }
+    self.setVisibilitySettingsForFarm = function(farmId, isVisible) {
+        return setVisibilitySettingsForFarm(farmId, isVisible);
+    }
     
     self.getUserWalletAddress = function() {
         return getUserWalletAddress();
@@ -105,32 +116,62 @@ function StorageProvider() {
     }
 
 
-    function getFarmAccordionSettings(farmId) {
+    function getFarmCollapseSettings(farmId) {
         let isCollapsed = null;
-        let settingsList = JSON.parse(window.localStorage.getItem('farmAccordionSettings'));
+        let settingsList = JSON.parse(window.localStorage.getItem('farmCollapseSettings'));
         if (settingsList) {
             isCollapsed = settingsList[farmId]?.isCollapsed;
         }
 
         return isCollapsed;
     }
-
-    function getAllFarmAccordionSettings() {
-        return JSON.parse(window.localStorage.getItem('farmAccordionSettings'));
+    function getAllFarmCollapseSettings() {
+        return JSON.parse(window.localStorage.getItem('farmCollapseSettings'));
     }
-
-    function setAccordionSettingsForFarm(farmId, isCollapsed) {
-        let farmAccordionSettings = getAllFarmAccordionSettings();
-        if (!farmAccordionSettings) {
-            farmAccordionSettings = {};
+    function setCollapseSettingsForFarm(farmId, isCollapsed) {
+        let farmCollapseSettings = getAllFarmCollapseSettings();
+        if (!farmCollapseSettings) {
+            farmCollapseSettings = {};
         }
 
-        farmAccordionSettings[farmId] = {
+        farmCollapseSettings[farmId] = {
             isCollapsed: isCollapsed
         };
 
-        window.localStorage.setItem('farmAccordionSettings', JSON.stringify(farmAccordionSettings));
+        window.localStorage.setItem('farmCollapseSettings', JSON.stringify(farmCollapseSettings));
     }
+
+    function getAllFarmVisibilitySettings() {
+        return JSON.parse(window.localStorage.getItem('farmVisibilitySettings'));
+    }
+    function initializeFarmVisibilitySettings(masterchefListJson) {
+		let farmVisibilitySettings = {};
+		masterchefListJson.forEach(item => {
+			farmVisibilitySettings[item.farmId] = {
+				name: item.name,
+				isVisible: item.showByDefault
+			}
+		});
+
+        window.localStorage.setItem('farmVisibilitySettings', JSON.stringify(farmVisibilitySettings));
+        return farmVisibilitySettings;
+    }    
+    function getVisibilitySettingsForFarm(farmId) {
+        let isVisible = null;
+        let settingsList = JSON.parse(window.localStorage.getItem('farmVisibilitySettings'));
+        if (settingsList) {
+            isVisible = settingsList[farmId]?.isVisible;
+        }
+
+        return isVisible;
+    }
+    function setVisibilitySettingsForFarm(farmId, isVisible) {
+        let farmVisibilitySettings = getAllFarmVisibilitySettings();
+        farmVisibilitySettings[farmId].isVisible = isVisible;
+
+        window.localStorage.setItem('farmVisibilitySettings', JSON.stringify(farmVisibilitySettings));
+    }
+
 
     function getTokenType(address) {
         let tokenType = null;
