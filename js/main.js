@@ -1,5 +1,5 @@
-const DEBUG = true;
-const DEBUG_FARM_ID = 37;
+const DEBUG = false;
+const DEBUG_FARM_ID = null;
 const DEBUG_POOL_ID = null;
 
 let appInitializer = null;
@@ -30,7 +30,7 @@ async function main() {
 		appInitializer.initializeFarmFilterDropdown(listOfFilteredFarms);
 		renderFarmInfoContainers(masterChefContractList);
 		const farmInfoProvider = new FarmInfoProvider();
-		if (DEBUG) {		
+		if (DEBUG && DEBUG_FARM_ID) {		
 			const farmInfo = await farmInfoProvider.getFarmInfo(masterChefContractList[DEBUG_FARM_ID]);
 			console.log(farmInfo);
 			const impermanentLossSettings = storageProvider.getImpermanentLossSettingsForFarm(farmInfo.farmId);

@@ -119,81 +119,83 @@
 					<div class="pool-header">
 						<span class="pool-pair">{{token0Symbol}} - {{token1Symbol}}</span>
 					</div>
-					<div class="pool-body">	
-						<div class="pool-details">
-							<div class="pool-token0-price">
-								<span class="custom-label">{{token0Symbol}}:</span>
-								<span>{{token0FormattedPrice}}</span>
-							</div>					
-							<div class="pool-token1-price">
-								<span class="custom-label">{{token1Symbol}}:</span>
-								<span>{{token1FormattedPrice}}</span>
-							</div>					
-							<div class="pool-tvl">
-								<span class="custom-label">Pool TVL:</span>
-								<span>{{formattedTvl}}</span>
-							</div>
-							<div class="pool-tvl">
-								<span class="custom-label">Staked TVL:</span>
-								<span>{{formattedStakedTvl}}</span>
-							</div>
-							<div class="pool-reward-allocation">
-								<span class="custom-label">Reward allocation:</span>
-								<span>{{formattedPoolRewardAllocation}}</span>
-							</div>
-							<div class="pool-apr">
-								<span class="custom-label">APR:</span>
-								<span>{{formattedApr}}</span>
-							</div>
-						</div>	
-						<div class="pool-staking-details">				
-							<div class="pool-staking-details-text">
-								<span class="custom-label">You are staking:</span>
-								<div>
-									<span class="big-text">{{formattedStakedLpTokenAmount}}</span><span class="small-text"> LP tokens</span>
+					<div style="display: block;">
+						<div class="pool-body">	
+							<div class="pool-details">
+								<div class="pool-token0-price">
+									<span class="custom-label">{{token0Symbol}}:</span>
+									<span>{{token0FormattedPrice}}</span>
+								</div>					
+								<div class="pool-token1-price">
+									<span class="custom-label">{{token1Symbol}}:</span>
+									<span>{{token1FormattedPrice}}</span>
+								</div>					
+								<div class="pool-tvl">
+									<span class="custom-label">Pool TVL:</span>
+									<span>{{formattedTvl}}</span>
+								</div>
+								<div class="pool-tvl">
+									<span class="custom-label">Staked TVL:</span>
+									<span>{{formattedStakedTvl}}</span>
+								</div>
+								<div class="pool-reward-allocation">
+									<span class="custom-label">Reward allocation:</span>
+									<span>{{formattedPoolRewardAllocation}}</span>
+								</div>
+								<div class="pool-apr">
+									<span class="custom-label">APR:</span>
+									<span>{{formattedApr}}</span>
+								</div>
+							</div>	
+							<div class="pool-staking-details">				
+								<div class="pool-staking-details-text">
+									<span class="custom-label">You are staking:</span>
+									<div>
+										<span class="big-text">{{formattedStakedLpTokenAmount}}</span><span class="small-text"> LP tokens</span>
+									</div>
+								</div>
+								<div class="pool-staking-details-text">
+									<span class="custom-label">Your stake is:</span>
+									<span class="big-text">{{formattedPercentOfPool}}</span><span class="small-text"> of the total pool</span>
+								</div>
+								<div class="pool-staking-details-text">
+									<span class="custom-label">Your LP is:</span>
+									<span class="big-text">{{formattedStakedToken0Amount}} {{token0Symbol}}</span>
+									<span class="small-text">and</span>
+									<span class="big-text">{{formattedStakedToken1Amount}} {{token1Symbol}}</span>
+								</div>
+								<div class="pool-staking-details-text">
+									<span class="custom-label">Your stake value is:</span>
+									<span class="bigger-text">{{formattedStakedValue}}</span>
 								</div>
 							</div>
-							<div class="pool-staking-details-text">
-								<span class="custom-label">Your stake is:</span>
-								<span class="big-text">{{formattedPercentOfPool}}</span><span class="small-text"> of the total pool</span>
-							</div>
-							<div class="pool-staking-details-text">
-								<span class="custom-label">Your LP is:</span>
-								<span class="big-text">{{formattedStakedToken0Amount}} {{token0Symbol}}</span>
-								<span class="small-text">and</span>
-								<span class="big-text">{{formattedStakedToken1Amount}} {{token1Symbol}}</span>
-							</div>
-							<div class="pool-staking-details-text">
-								<span class="custom-label">Your stake value is:</span>
-								<span class="bigger-text">{{formattedStakedValue}}</span>
+							<div class="pool-impernanent-loss-details">
+								<div class="pool-impernanent-loss-details-text">
+									<span class="custom-label">Initial number of staked tokens:</span>
+									<span class="big-text">{{impermanentLossInfo.formattedIlInitialTokenAmount}} {{impermanentLossInfo.initialTokenSymbol}}</span>
+								</div>
+								<div class="pool-impernanent-loss-details-text">
+									<span class="custom-label">Change in number of staked tokens:</span>
+									<span class="big-text">{{impermanentLossInfo.formattedChangeInNumberOfTokens}} {{impermanentLossInfo.initialTokenSymbol}}</span>
+								</div>
+								<div class="pool-impernanent-loss-details-text">
+									<span class="custom-label">Current value of 2x {{impermanentLossInfo.initialTokenSymbol}} tokens if held:</span>
+									<span class="big-text">{{impermanentLossInfo.formattedCurrentValueOfTokensIfHeld}}</span>
+								</div>
+								<div class="pool-impernanent-loss-details-text">
+									<span class="custom-label">Impermanent loss / profit:</span>
+									<span class="bigger-text">{{impermanentLossInfo.impermanentNetValueChangeSign}}{{impermanentLossInfo.formattedImpermanentNetValueChange}}</span>
+								</div>
 							</div>
 						</div>
-						<div class="pool-impernanent-loss-details">
-							<div class="pool-impernanent-loss-details-text">
-								<span class="custom-label">Initial number of staked tokens:</span>
-								<span class="big-text">{{impermanentLossInfo.formattedIlInitialTokenAmount}} {{impermanentLossInfo.initialTokenSymbol}}</span>
-							</div>
-							<div class="pool-impernanent-loss-details-text">
-								<span class="custom-label">Change in number of staked tokens:</span>
-								<span class="big-text">{{impermanentLossInfo.formattedChangeInNumberOfTokens}} {{impermanentLossInfo.initialTokenSymbol}}</span>
-							</div>
-							<div class="pool-impernanent-loss-details-text">
-								<span class="custom-label">Current value of 2x {{impermanentLossInfo.initialTokenSymbol}} tokens if held:</span>
-								<span class="big-text">{{impermanentLossInfo.formattedCurrentValueOfTokensIfHeld}}</span>
-							</div>
-							<div class="pool-impernanent-loss-details-text">
-								<span class="custom-label">Impermanent loss / profit:</span>
-								<span class="bigger-text">{{impermanentLossInfo.impermanentNetValueChangeSign}}{{impermanentLossInfo.formattedImpermanentNetValueChange}}</span>
-							</div>
+						<div class="pool-footer">
+							{{#if showImpermanentLossSettingsButton}}
+							<button class="impernanent-loss-settings-button" data-farm-id="{{../farmId}}" data-pool-id="{{poolId}}">Impermanent Loss Settings</button>
+							{{/if}}
 						</div>
 					</div>
 					<span class="pool-id">{{poolId}}</span>
 					<span class="pool-token-type">{{lpTokenType}}</span>
-					<div class="pool-footer">
-						{{#if showImpermanentLossSettingsButton}}
-						<button class="impernanent-loss-settings-button" data-farm-id="{{../farmId}}" data-pool-id="{{poolId}}">Impermanent Loss Settings</button>
-						{{/if}}
-					</div>
 					<div class="best-apr-ribbon">
 						<span>Best APR</span>
 					</div>

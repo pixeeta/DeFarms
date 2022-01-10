@@ -24,8 +24,10 @@ function PoolInfoViewModel(poolInfo, isBestApr, poolImpermanentLossSettings) {
             self.hasImpermanentLossInfo = false;
             self.impermanentLossInfo = null;
         }
+        
+        self.hasImpermanentLossInfoClass = self.hasImpermanentLossInfo ? 'pool-has-impermanent-loss-info' : '';
     }
-    
+
     if (poolInfo) {
         self.address = poolInfo.address;
         self.poolId = poolInfo.poolId;
@@ -73,7 +75,6 @@ function PoolInfoViewModel(poolInfo, isBestApr, poolImpermanentLossSettings) {
         self.isBestAprClass = isBestApr ? 'pool-is-best-apr' : '';
         self.isStakedClass = self.isStaked ? 'pool-is-staked' : '';
         self.isIncentivisedClass = poolInfo.technicals.isIncentivised ? '' : 'pool-is-not-incentivised';
-        self.hasImpermanentLossInfoClass = self.hasImpermanentLossInfo ? 'pool-has-impermanent-loss-info' : '';
         
         self.hasData = true;
     } else {
