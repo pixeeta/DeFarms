@@ -10,7 +10,7 @@ body {
 #content-container { 
     display: flex;
     flex-direction: column;
-    max-width: 1460px;
+    max-width: 1200px;
     margin: auto;
     margin-top: 80px;
     margin-bottom: 20px;
@@ -21,6 +21,33 @@ body {
     text-align: center;   
     margin-top: 100px;
     font-size: 24px;
+}
+
+#wallet-address-input-container { 
+    /* display: none; */
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;  
+    font-size: 24px;
+    /* width: 80%; */
+    /* align-self: center; */
+    margin-top: 20px;
+    margin-left: 15px;
+    margin-right: 15px;
+    padding-left: 14px;
+    /* padding-right: 14px; */
+}
+
+#farms-container {
+    display: flex;
+    flex-direction: column;
+    margin-top: 30px;
+}
+
+#wallet-address-input-container label {
+    align-self: flex-start;
+    font-size: 20px;
 }
 
 .custom-caret-icon {
@@ -80,9 +107,69 @@ body {
 
 body.dark-mode {
     color: #ccc;
-    background: #121212;
+    /* background: #121212; */
+    /* background-color: #120712;  */
+    background-color: #1b0f15;
 }
 
 body.dark-mode .custom-caret  {
     border-color: #ccc;
+}
+
+body.dark-mode input.form-control, body.dark-mode select.form-control{
+    color: #c1c1c1;
+    /* background-color: #191919; */
+    background-color: #bebebe12;
+    /* border-color:#696969; */
+    border-color: #c5c5c55e;
+}
+
+body.dark-mode .btn-default,
+body.dark-mode .btn-secondary {
+    color: #c1c1c1;
+    background-color: #1c1f21;
+    /* border-color:#696969; */
+    border-color: #c5c5c55e;
+}
+
+body.dark-mode .btn-default:hover,
+body.dark-mode .btn-secondary:hover {
+    background-color: #353535;
+}
+
+body.dark-mode .modal-content {
+    background: #1f1f1f;
+    border-color:rgb(81 81 81 / 99%);
+}
+
+/* ######################## */
+
+/* @media (min-width: 576px) {        
+    #content-container {
+        max-width: 560px;
+    }
+} */
+
+@media (min-width: 768px) {        
+    #content-container {
+        max-width: 720px;
+    }
+}
+
+@media (min-width: 992px) {        
+    #content-container {
+        max-width: 940px;
+    }
+}
+
+@media (min-width: 1200px) {        
+    #content-container {
+        max-width: 1100px;
+    }
+}
+
+@media (min-width: 1300px) {        
+    #content-container {
+        max-width: 1200px;
+    }
 }

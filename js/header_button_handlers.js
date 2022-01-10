@@ -1,8 +1,14 @@
 
+function disableHeaderButtons() {
+	$('#sort-farms-by-apr-button, #sort-pools-by-apr-button').addClass('disabled');
+	$('#sort-farms-by-apr-button, #sort-pools-by-apr-button').attr('disabled', 'disabled');
+}
+
 function enableHeaderButtons() {
 	$('#sort-farms-by-apr-button, #sort-pools-by-apr-button').removeClass('disabled');
 	$('#sort-farms-by-apr-button, #sort-pools-by-apr-button').attr('disabled', null);
 }
+
 
 function toggleShowStakedOnlyPools(isActive) {
 	if (isActive == null || !isActive) {

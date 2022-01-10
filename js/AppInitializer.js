@@ -13,24 +13,29 @@ function AppInitializer() {
         return initializeFarmFilterDropdown(listItems);
     }
 
+    self.initializeWalletAddressInput = () => {
+        
+    }
+
     async function initializeBlockchainConnection() {
         // const networkApiUrl = 'https://rpc.mtv.ac';
-        const networkApiUrl = 'https://api.s0.t.hmny.io';
+        // const networkApiUrl = 'https://api.s0.t.hmny.io';
+        const networkApiUrl = 'https://harmony-0-rpc.gateway.pokt.network';
         let connectionInitialized = false;
-        if (window.ethereum) {
-            const walletAccounts = await window.ethereum.request({ method: 'eth_accounts' });
-            if (walletAccounts !== undefined && walletAccounts.length > 0) {
-                console.log('Found previously cached wallet, initializing user wallet connection');
-                connectionInitialized = await initializeWallet(networkApiUrl);
-                if (connectionInitialized) {
-                    $('#connect-wallet-button').attr('disabled', true);
-                    $('#connect-wallet-button').addClass('disabled');
-                    $('#connect-wallet-button').html('Wallet connected');
-                }
-            } else {
-                storageProvider.setUserWalletAddress('');
-            }
-        }
+        // if (window.ethereum) {
+        //     const walletAccounts = await window.ethereum.request({ method: 'eth_accounts' });
+        //     if (walletAccounts !== undefined && walletAccounts.length > 0) {
+        //         console.log('Found previously cached wallet, initializing user wallet connection');
+        //         connectionInitialized = await initializeWallet(networkApiUrl);
+        //         if (connectionInitialized) {
+        //             $('#connect-wallet-button').attr('disabled', true);
+        //             $('#connect-wallet-button').addClass('disabled');
+        //             $('#connect-wallet-button').html('Wallet connected');
+        //         }
+        //     } else {
+        //         storageProvider.setUserWalletAddress('');
+        //     }
+        // }
     
         if (!connectionInitialized) {
             console.log('Cached wallet not found, initializing connection to: ', networkApiUrl);

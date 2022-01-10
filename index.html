@@ -29,31 +29,51 @@
 </head>
 <body>
 	<div id="header">
-		<div id="page-title">			
-			<h1>Harmony Yield Farm Aggregator</h1>
-		</div>
-		<div id="header-controls">
-			<div class="dropdown">
-				<button class="header-button dropdown-toggle" type="button" 
-						id="filter-farms-dropdown" data-toggle="dropdown" 
-						aria-haspopup="true" aria-expanded="true">
-					Filter farms
-				  <span class="caret"></span>
-				</button>
-				<ul id="filter-farms-dropdown-list" class="dropdown-menu checkbox-menu allow-focus" aria-labelledby="filter-farms-dropdown"></ul>
+		<div id="header-content-container">
+			<div id="page-title">			
+				<h1>deFarms</h1>
 			</div>
-			<button id="sort-farms-by-apr-button" class="header-button disabled" disabled>Sort farms by APR</button>
-			<button id="sort-pools-by-apr-button" class="header-button disabled" disabled>Sort pools by APR</button>
-			<button id="show-staked-only-button" class="header-button">Show staked only</button>
-			<button id="show-non-incentivised-pools-button" class="header-button">Show non-incentivized</button>
-			<button id="toggle-dark-mode-button" class="header-button">Dark mode</button>
-			<button id="connect-wallet-button" class="header-button">Connect MM wallet</button>
+			<div id="header-controls">
+				<div class="dropdown">
+					<button class="header-button dropdown-toggle" type="button" 
+							id="filter-farms-dropdown" data-toggle="dropdown" 
+							aria-haspopup="true" aria-expanded="true">
+						Filter farms
+					<span class="caret"></span>
+					</button>
+					<ul id="filter-farms-dropdown-list" class="dropdown-menu checkbox-menu allow-focus" aria-labelledby="filter-farms-dropdown"></ul>
+				</div>
+				<button id="sort-farms-by-apr-button" class="header-button disabled" disabled>Sort farms by APR</button>
+				<button id="sort-pools-by-apr-button" class="header-button disabled" disabled>Sort pools by APR</button>
+				<button id="show-staked-only-button" class="header-button">Show staked only</button>
+				<button id="show-non-incentivised-pools-button" class="header-button">Show non-incentivized</button>
+				<button id="toggle-dark-mode-button" class="header-button">Dark mode</button>
+				<button id="connect-wallet-button" class="header-button">Connect MM wallet</button>
+			</div>
 		</div>
 	</div>
 	<div id="wrong-network-message">
 		<span>Please switch to Harmony Mainnet Shard 0 network</span>
 	</div>
-	<div id="content-container"></div>
+	<div id="content-container">
+		<div id="wallet-address-input-container">
+			<label for="wallet-address-input">Your wallet address (optional):</label>
+			<div class="input-group">
+					<input id="wallet-address-input" type="text" class="form-control" placeholder="0x...">
+				<div class="input-group-btn">
+					<button class="btn btn-default" id="clear-wallet-address-button">
+					Clear
+					</button>
+				</div>
+			</div>		
+			<div style="margin-top: 20px">
+				<button class="btn btn-primary" id="load-farms-button">
+					Load farms
+				</button>
+			</div>	
+		</div>
+		<div id="farms-container"></div>
+	</div>
 	<div id="modal-container" class="modal fade" tabindex="-1"></div>
 </body>
 
@@ -190,7 +210,7 @@
 						</div>
 						<div class="pool-footer">
 							{{#if showImpermanentLossSettingsButton}}
-							<button class="impernanent-loss-settings-button" data-farm-id="{{../farmId}}" data-pool-id="{{poolId}}">Impermanent Loss Settings</button>
+							<button class="impernanent-loss-settings-button btn btn-default" data-farm-id="{{../farmId}}" data-pool-id="{{poolId}}">IL Settings</button>
 							{{/if}}
 						</div>
 					</div>

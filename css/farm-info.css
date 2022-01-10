@@ -264,9 +264,9 @@ span.pool-pair {
     font-size: 18px;
 }
 
-.pool-item .pool-footer {
-    height: 22px;
-    margin-top: 8px;
+.pool-item .pool-footer { 
+    margin-top: 10px;
+    margin-bottom: 20px;
 }
 
 /* ###### POOL IMPERMANENT LOSS DETAILS ##### */

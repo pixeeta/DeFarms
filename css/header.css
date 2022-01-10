@@ -2,14 +2,20 @@
 #header {
     position: fixed;
     display: flex;
-    justify-content: space-between;
-    z-index: 9999;
-    top: 0;
+    justify-content: center;
     height: 60px;
+    top: 0;
+    z-index: 9999;
     width: 100%;
     background-color: rgb(250, 250, 250);
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     box-shadow: 0 0 16px rgba(0, 0, 0, 0.07);
+}
+
+#header-content-container {
+    display: flex;
+    justify-content: space-between;
+    flex-basis: 1200px;
 }
 
 #header #page-title {
@@ -29,6 +35,7 @@
 #header #header-controls {
     display: flex;
     flex-basis: 620px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .header-button {
@@ -61,6 +68,9 @@
     background-color: rgb(240 240 240);
 }
 
+#connect-wallet-button {
+    display: none;
+}
 
 /* ######### DARK MODE ######### */ 
 
@@ -109,7 +119,8 @@ body.dark-mode .header-button.active {
 /* ##### DROPDOWN ##### */
 
 .checkbox-menu {
-    max-height: 320px;
+    max-height: calc(100vh - 200px);
+    /* max-height: 320px; */
     overflow-y: scroll;
 }
 
@@ -143,4 +154,53 @@ body.dark-mode .header-button.active {
 .checkbox-menu li.active label:hover,
 .checkbox-menu li.active label:focus {
     background-color: #b8b8ff;
+}
+
+
+/* ######################## */
+
+/* @media (min-width: 576px) {        
+    #content-container {
+        max-width: 560px;
+    }
+} */
+
+@media (min-width: 768px) {    
+    #header-content-container {
+        flex-basis: 720px;
+    }
+
+    #content-container {
+        max-width: 720px;
+    }   
+}
+
+@media (min-width: 992px) {     
+    #header-content-container {
+        flex-basis: 940px;
+    }
+
+    #content-container {
+        max-width: 940px;
+    }
+}
+
+@media (min-width: 1200px) {     
+    #header-content-container {
+        flex-basis: 1100px;
+    }
+
+    #content-container {
+        max-width: 1100px;
+    }
+}
+
+@media (min-width: 1300px) {    
+    #header-content-container {
+        flex-basis: 1200px;
+    }
+
+    #content-container {
+        max-width: 1200px;
+    }
 }

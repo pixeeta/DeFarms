@@ -9,6 +9,8 @@ let userWalletIsConnected = false;
 let prices = [];
 let farmInfoViewModels = [];
 let listOfFilteredFarms = [];
+let masterChefContractList = [];
+let readyToLoadFarms = false;
 
 window.addEventListener('load', async function () {
 	storageProvider = new StorageProvider();
@@ -17,6 +19,22 @@ window.addEventListener('load', async function () {
 	appInitializer.initializeHeaderControls();
 
 	main();
+	
+	$('#clear-wallet-address-button').on('click', () => {
+		$('#wallet-address-input').val(null);
+		storageProvider.setUserWalletAddress(null);
+		userWalletIsConnected = false;
+	});
+
+	$('#load-farms-button').on('click', () => {
+		let walletAddressInputValue = $('#wallet-address-input').val();
+		if (walletAddressInputValue && walletAddressInputValue !== '') {
+			storageProvider.setUserWalletAddress(walletAddressInputValue);
+			userWalletIsConnected = true;
+		}
+
+		loadFarms();
+	});
 })
 
 async function main() {	
@@ -24,46 +42,57 @@ async function main() {
 	if (networkId === NETWORKS.HARMONY_S0.chainIdInt) {
 		const tokenPriceProvider = new TokenPriceProvider();
 		prices = await tokenPriceProvider.getHarmonyPrices();
+		masterChefContractList = HARMONY_MASTERCHEF_CONTRACT_LIST;
+		readyToLoadFarms = true;
+	} else {
+		$('#wrong-network-message').show();
+	}
+	
+	let storedWalletAddress = storageProvider.getUserWalletAddress();
+	if (storedWalletAddress && storedWalletAddress !== '' && storedWalletAddress !== 'null') {
+		$('#wallet-address-input').val(storedWalletAddress);
+		userWalletIsConnected = true;
+		loadFarms();
+	}
+}
 
-		const masterChefContractList = HARMONY_MASTERCHEF_CONTRACT_LIST;
+async function loadFarms() {
+	disableHeaderButtons();
+	if (readyToLoadFarms) {
+		$('#farms-container').empty();
 		listOfFilteredFarms = getListOfFilteredFarms(masterChefContractList);
 		appInitializer.initializeFarmFilterDropdown(listOfFilteredFarms);
 		renderFarmInfoContainers(masterChefContractList);
 		const farmInfoProvider = new FarmInfoProvider();
-		if (DEBUG && DEBUG_FARM_ID) {		
-			const farmInfo = await farmInfoProvider.getFarmInfo(masterChefContractList[DEBUG_FARM_ID]);
-			console.log(farmInfo);
-			const impermanentLossSettings = storageProvider.getImpermanentLossSettingsForFarm(farmInfo.farmId);
-			renderFarmInfo(farmInfo, true, false, impermanentLossSettings);
-		} else {
-			for (let i = 0; i < masterChefContractList.length; i++) {
-				let farmInfo = null;
-				const isFarmVisible = getIsFarmVisible(masterChefContractList[i].farmId);
-				const isFarmInfoCollapsed = storageProvider.getFarmCollapseSettings(masterChefContractList[i].farmId);
-				if (isFarmVisible){
-					if (masterChefContractList[i].isSupported) {
-						farmInfo = await farmInfoProvider.getFarmInfo(masterChefContractList[i]);
-					} else {
-						farmInfo = {
-							name: masterChefContractList[i].name,
-							farmId: masterChefContractList[i].farmId,
-							masterchefAddress: masterChefContractList[i].chefContract,
-							isSupported: false,
-							pools: []
-						}
+		for (let i = 0; i < masterChefContractList.length; i++) {
+			let farmInfo = null;
+			const isFarmVisible = getIsFarmVisible(masterChefContractList[i].farmId);
+			const isFarmInfoCollapsed = storageProvider.getFarmCollapseSettings(masterChefContractList[i].farmId);
+			if (isFarmVisible){
+				if (masterChefContractList[i].isSupported) {
+					farmInfo = farmInfoProvider.getFarmInfo(masterChefContractList[i]).then((farmInfo) => {
+						console.log(farmInfo);
+						const impermanentLossSettings = storageProvider.getImpermanentLossSettingsForFarm(farmInfo?.farmId);
+						renderFarmInfo(farmInfo, isFarmVisible, isFarmInfoCollapsed, impermanentLossSettings);
+					});
+				} else {
+					farmInfo = {
+						name: masterChefContractList[i].name,
+						farmId: masterChefContractList[i].farmId,
+						masterchefAddress: masterChefContractList[i].chefContract,
+						isSupported: false,
+						pools: []
 					}
 				}
-
-				console.log(farmInfo);
-				const impermanentLossSettings = storageProvider.getImpermanentLossSettingsForFarm(farmInfo?.farmId);
-				renderFarmInfo(farmInfo, isFarmVisible, isFarmInfoCollapsed, impermanentLossSettings);
 			}
-		}
-	} else {
-		$('#wrong-network-message').show();
-	}
 
-	enableHeaderButtons();
+			console.log(farmInfo);
+			// const impermanentLossSettings = storageProvider.getImpermanentLossSettingsForFarm(farmInfo?.farmId);
+			// renderFarmInfo(farmInfo, isFarmVisible, isFarmInfoCollapsed, impermanentLossSettings);
+		}
+
+		enableHeaderButtons();
+	}
 }
 
 function getListOfFilteredFarms(masterChefContractList) {
@@ -85,7 +114,7 @@ function renderFarmInfoContainers(masterChefContractList) {
 	const compiledTemplate = Handlebars.compile(templateHtml);
 	masterChefContractList.forEach(masterchefDetails => {
 		const farmInfoContainerVm = new FarmInfoViewModel(masterchefDetails, getIsFarmVisible(masterchefDetails.farmId), null, null, true);
-		$('#content-container').append(compiledTemplate(farmInfoContainerVm));	
+		$('#farms-container').append(compiledTemplate(farmInfoContainerVm));	
 	})
 }
 
