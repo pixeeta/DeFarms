@@ -52,26 +52,30 @@
 			</div>
 		</div>
 	</div>
+	<div id="second-header">
+		<div id="content-controls-container">
+			<div id="wallet-address-input-container">
+				<label for="wallet-address-input">Your wallet address (optional):</label>
+				<div class="input-group">
+						<input id="wallet-address-input" type="text" class="form-control" placeholder="0x...">
+					<div class="input-group-btn">
+						<button class="btn btn-default" id="clear-wallet-address-button">
+						Clear
+						</button>
+					</div>
+				</div>		
+			</div>	
+			<div>
+				<button class="btn btn-primary" id="load-farms-button">
+					Load farms
+				</button>
+			</div>
+		</div>
+	</div>
 	<div id="wrong-network-message">
 		<span>Please switch to Harmony Mainnet Shard 0 network</span>
 	</div>
 	<div id="content-container">
-		<div id="wallet-address-input-container">
-			<label for="wallet-address-input">Your wallet address (optional):</label>
-			<div class="input-group">
-					<input id="wallet-address-input" type="text" class="form-control" placeholder="0x...">
-				<div class="input-group-btn">
-					<button class="btn btn-default" id="clear-wallet-address-button">
-					Clear
-					</button>
-				</div>
-			</div>		
-			<div style="margin-top: 20px">
-				<button class="btn btn-primary" id="load-farms-button">
-					Load farms
-				</button>
-			</div>	
-		</div>
 		<div id="farms-container"></div>
 	</div>
 	<div id="modal-container" class="modal fade" tabindex="-1"></div>
