@@ -4,6 +4,7 @@ const DEBUG_POOL_ID = null;
 
 let appInitializer = null;
 let web3 = null;
+let rpcLatencyTester = null;
 let storageProvider = null;
 let userWalletIsConnected = false;
 let prices = [];
@@ -15,27 +16,17 @@ let readyToLoadFarms = false;
 window.addEventListener('load', async function () {
 	storageProvider = new StorageProvider();
 	appInitializer = new AppInitializer();
-	await appInitializer.initializeBlockchainConnection();
 	appInitializer.initializeHeaderControls();
+	appInitializer.initializeSecondaryHeaderControls();
+
+	rpcLatencyTester = new RpcLatencyTester(HARMONY_RPCS);
+	let latencyData = await rpcLatencyTester.getRpcLatencyData();
+	console.log(latencyData);
+
+	await appInitializer.initializeBlockchainConnection(HARMONY_RPCS[1].url);
 
 	main();
-	
-	$('#clear-wallet-address-button').on('click', () => {
-		$('#wallet-address-input').val(null);
-		storageProvider.setUserWalletAddress(null);
-		userWalletIsConnected = false;
-	});
-
-	$('#load-farms-button').on('click', () => {
-		let walletAddressInputValue = $('#wallet-address-input').val();
-		if (walletAddressInputValue && walletAddressInputValue !== '') {
-			storageProvider.setUserWalletAddress(walletAddressInputValue);
-			userWalletIsConnected = true;
-		}
-
-		loadFarms();
-	});
-})
+});
 
 async function main() {	
 	const networkId = await web3.eth.net.getId();
@@ -44,15 +35,12 @@ async function main() {
 		prices = await tokenPriceProvider.getHarmonyPrices();
 		masterChefContractList = HARMONY_MASTERCHEF_CONTRACT_LIST;
 		readyToLoadFarms = true;
+
+		if (userWalletIsConnected) {
+			loadFarms();
+		}
 	} else {
 		$('#wrong-network-message').show();
-	}
-	
-	let storedWalletAddress = storageProvider.getUserWalletAddress();
-	if (storedWalletAddress && storedWalletAddress !== '' && storedWalletAddress !== 'null') {
-		$('#wallet-address-input').val(storedWalletAddress);
-		userWalletIsConnected = true;
-		loadFarms();
 	}
 }
 

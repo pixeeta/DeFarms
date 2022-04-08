@@ -54,7 +54,7 @@ function sortFarmsByApr(isActive) {
 			farmInfoViewModels.sort((a, b) => (a?.farmId > b?.farmId) ? 1 : -1);
             changeFarmsOrder(farmInfoViewModels);
 		} else {
-            sortPoolsDescending(farmInfoViewModels, 'farmBestApr');
+            sortViewModelsByProperty(farmInfoViewModels, 'farmBestApr');
             changeFarmsOrder(farmInfoViewModels);
 		}
 	}
@@ -69,8 +69,8 @@ function sortPoolsByApr(isActive) {
 			});
 		} else {
 			farmInfoViewModels.forEach(farm => {
-                sortPoolsDescending(farm.pools, 'poolRewardAllocation');
-                sortPoolsDescending(farm.pools, 'apr');
+                sortViewModelsByProperty(farm.pools, 'poolRewardAllocation');
+                sortViewModelsByProperty(farm.pools, 'apr');
 			// 	const sortedPools = farm.pools.sort((a, b) => {
 			// 		if (!a.hasData || isNaN(a.apr)) {
 			// 			return 1;
@@ -95,22 +95,6 @@ function sortPoolsByApr(isActive) {
             });
 		}
 	}
-}
-
-function sortPoolsDescending(poolViewModels, propertyName) {
-    poolViewModels.sort((a, b) => {
-        if (!a.hasData || isNaN(a[propertyName])) {
-            return 1;
-        } else if ((!b.hasData || isNaN(b[propertyName]))){
-            return -1;
-        }
-
-        if (a[propertyName] <= b[propertyName]) {
-            return 1;
-        } else {
-            return -1;
-        }
-    })
 }
 
 function changeFarmsOrder(farmViewModelList) {

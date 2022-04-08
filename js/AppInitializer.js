@@ -1,12 +1,16 @@
 function AppInitializer() {
     let self = this;
 
-    self.initializeBlockchainConnection = async () => {
-        return initializeBlockchainConnection();
+    self.initializeBlockchainConnection = async (networkApiUrl) => {
+        return initializeBlockchainConnection(networkApiUrl);
     }
 
     self.initializeHeaderControls = () => {
         return initializeHeaderControls();
+    }
+
+    self.initializeSecondaryHeaderControls = () => {
+        return initializeSecondaryHeaderControls();
     }
 
     self.initializeFarmFilterDropdown = (listItems) => {
@@ -17,25 +21,27 @@ function AppInitializer() {
         
     }
 
-    async function initializeBlockchainConnection() {
-        // const networkApiUrl = 'https://rpc.mtv.ac';
-        // const networkApiUrl = 'https://api.s0.t.hmny.io';
-        const networkApiUrl = 'https://harmony-0-rpc.gateway.pokt.network';
+    async function initializeBlockchainConnection(networkApiUrl, useWalletIfAvailable) {
+        // networkApiUrl = 'https://rpc.mtv.ac';
+        // networkApiUrl = 'https://api.s0.t.hmny.io';
+        // networkApiUrl = HARMONY_RPCS[1].url;
         let connectionInitialized = false;
-        // if (window.ethereum) {
-        //     const walletAccounts = await window.ethereum.request({ method: 'eth_accounts' });
-        //     if (walletAccounts !== undefined && walletAccounts.length > 0) {
-        //         console.log('Found previously cached wallet, initializing user wallet connection');
-        //         connectionInitialized = await initializeWallet(networkApiUrl);
-        //         if (connectionInitialized) {
-        //             $('#connect-wallet-button').attr('disabled', true);
-        //             $('#connect-wallet-button').addClass('disabled');
-        //             $('#connect-wallet-button').html('Wallet connected');
-        //         }
-        //     } else {
-        //         storageProvider.setUserWalletAddress('');
-        //     }
-        // }
+        if (useWalletIfAvailable) {
+            if (window.ethereum) {
+                const walletAccounts = await window.ethereum.request({ method: 'eth_accounts' });
+                if (walletAccounts !== undefined && walletAccounts.length > 0) {
+                    console.log('Found previously cached wallet, initializing user wallet connection');
+                    connectionInitialized = await initializeWallet(networkApiUrl);
+                    if (connectionInitialized) {
+                        $('#connect-wallet-button').attr('disabled', true);
+                        $('#connect-wallet-button').addClass('disabled');
+                        $('#connect-wallet-button').html('Wallet connected');
+                    }
+                } else {
+                    storageProvider.setUserWalletAddress('');
+                }
+            }
+        }
     
         if (!connectionInitialized) {
             console.log('Cached wallet not found, initializing connection to: ', networkApiUrl);
@@ -162,6 +168,31 @@ function AppInitializer() {
         
         $(document).on('click', '.allow-focus', function (e) {
             e.stopPropagation();
+        });
+    }
+
+    function initializeSecondaryHeaderControls() {	
+        let storedWalletAddress = storageProvider.getUserWalletAddress();
+        if (storedWalletAddress && storedWalletAddress !== '' && storedWalletAddress !== 'null') {
+            $('#wallet-address-input').val(storedWalletAddress);
+            userWalletIsConnected = true;
+            loadFarms();
+        }
+        
+        $('#clear-wallet-address-button').on('click', () => {
+            $('#wallet-address-input').val(null);
+            storageProvider.setUserWalletAddress(null);
+            userWalletIsConnected = false;
+        });
+    
+        $('#load-farms-button').on('click', () => {
+            let walletAddressInputValue = $('#wallet-address-input').val();
+            if (walletAddressInputValue && walletAddressInputValue !== '') {
+                storageProvider.setUserWalletAddress(walletAddressInputValue);
+                userWalletIsConnected = true;
+            }
+    
+            loadFarms();
         });
     }
 
